@@ -119,6 +119,10 @@ dist
 # Firebase cache directory
 .firebase/
 
+# Firebase credentials (IMPORTANT: Never commit these files)
+serviceAccountKey.json
+*-firebase-adminsdk-*.json
+
 # TernJS port file
 .tern-port
 
