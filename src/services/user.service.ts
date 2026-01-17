@@ -107,7 +107,6 @@ export class UserService {
       // Retornar información del usuario sin la contraseña
       const { password: _, ...userInfo } = userData;
       return { 
-        success: true, 
         user: { 
           id: userDoc.id, 
           ...userInfo 
