@@ -6,8 +6,8 @@ const userService = new UserService();
 // Crear usuario
 export const createUser = async (req: Request, res: Response) => {
   try {
-    const { userId, name, lastname, email, password, phone, idcard, rol, rating, profileURL } = req.body;
-    const result = await userService.createUser(userId, name, lastname, email, password, phone, idcard, rol, rating, profileURL);
+    const { id, name, lastName, email, password, phone, idCard, role, rating, profileImageUrl } = req.body;
+    const result = await userService.createUser(id, name, lastName, email, password, phone, idCard, role, rating, profileImageUrl);
     const status = result.success ? 201 : 400;
     res.status(status).json(result);
   } catch (error) {
@@ -74,7 +74,7 @@ export const loginUser = async (req: Request, res: Response) => {
     }
     const result = await userService.loginUser(email, password);
     if (!result.success) {
-     return res.status(401).json({message:"Error en la verificacion",})
+     return res.status(401).json({message:"Error en la verificacion"})
     }
      return res.status(200).json({token:" ",sessionId:"",expiredAt:"",result});
   } catch (error) {

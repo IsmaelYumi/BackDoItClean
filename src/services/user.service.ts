@@ -12,26 +12,26 @@ export class UserService {
   private collection = db.collection('users');
 
   // Crear usuario
-  async createUser(userId: string, name: string, lastname:string, email:string, password:string, phone:string, idcard:string, rol:string, rating?:number, profileURL?:string) {
+  async createUser(id: string, name: string, lastName:string, email:string, password:string, phone:string, idCard:string, role:string, rating?:number, profileURL?:string) {
     try {
       // Encriptar la contraseña
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-      await this.collection.doc(userId).set({
+      await this.collection.doc(id).set({
         name,
-        lastname,
+        lastName,
         email,
         password: hashedPassword,
         phone,
-        idcard,
-        rol,
+        idCard,
+        role,
         rating: rating || 0,
-        profileURL: profileURL || '',
+        profileImageUrl: profileURL || '',
         createdAt: new Date(),
         updatedAt: new Date()
       });
-      return { success: true, userId };
+      return { success: true, id };
     } catch (error) {
       console.error('Error creando usuario:', error);
       throw error;
