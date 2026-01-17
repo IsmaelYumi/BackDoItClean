@@ -2,6 +2,7 @@ import express, { Application } from 'express';
 import deviceRoutes from './routes/device.routes';
 import productRoutes from './routes/product.routes';
 import serviceRoutes from './routes/service.routes';
+import userRoutes from './routes/user.routes';
 
 const app: Application = express();
 
@@ -18,5 +19,6 @@ app.get('/', (req, res) => {
 app.use('/api', deviceRoutes);
 app.use('/api', productRoutes);
 app.use('/api', serviceRoutes);
+app.use('/api', userRoutes);
 
 export default app;
