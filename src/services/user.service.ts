@@ -93,20 +93,18 @@ export class UserService {
       if (snapshot.empty) {
         return { success: false, message: 'Usuario no encontrado' };
       }
-
       const userDoc = snapshot.docs[0];
       const userData = userDoc.data();
 
       // Verificar contraseña
       const isPasswordValid = await bcrypt.compare(password, userData.password);
-      
       if (!isPasswordValid) {
         return { success: false, message: 'Contraseña incorrecta' };
       }
-
       // Retornar información del usuario sin la contraseña
       const { password: _, ...userInfo } = userData;
       return { 
+        success:true,
         user: { 
           id: userDoc.id, 
           ...userInfo 
