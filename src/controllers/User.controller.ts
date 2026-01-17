@@ -74,9 +74,9 @@ export const loginUser = async (req: Request, res: Response) => {
     }
     const result = await userService.loginUser(email, password);
     if (!result.success) {
-      return res.status(401).json({succes:1,token:" ",sessionID:"",expiredAt:"",user:result});
+     return res.status(401).json({message:"Erro en la verificacion"})
     }
-    res.status(200).json(result);
+     return res.status(200).json({succes:1,token:" ",sessionID:"",expiredAt:"",user:result});
   } catch (error) {
     res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
   }
