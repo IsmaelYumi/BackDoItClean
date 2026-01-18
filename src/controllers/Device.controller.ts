@@ -52,7 +52,17 @@ export const createDevice = async (req: Request, res: Response) => {
     res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
   }
 };
-
+// Obtener dispositivo por ID
+export const getDeviceById = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const result = await deviceService.getDeviceById(Number(id));
+    const status = result.success ? 200 : 404;
+    res.status(status).json(result);
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
+  }
+};
 // Obtener dispositivo por código
 export const getDeviceByCode = async (req: Request, res: Response) => {
   try {
@@ -147,6 +157,18 @@ export const getDevicesBySucursal = async (req: Request, res: Response) => {
   try {
     const { idSucursal } = req.params;
     const result = await deviceService.getDevicesBySucursal(Number(idSucursal));
+    const status = result.success ? 200 : 404;
+    res.status(status).json(result);
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
+  }
+};
+
+// Obtener todos los datos de dispositivos por sucursal
+export const getAllDeviceDataBySucursal = async (req: Request, res: Response) => {
+  try {
+    const { idSucursal } = req.params;
+    const result = await deviceService.getAllDeviceDataBySucursal(Number(idSucursal));
     const status = result.success ? 200 : 404;
     res.status(status).json(result);
   } catch (error) {

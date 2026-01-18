@@ -72,6 +72,21 @@ export class Device {
             return { mensaje: "Error al crear el dispositivo", success: false, error };
         }
     }
+    
+    // Obtener dispositivo por ID
+    async getDeviceById(id: number) {
+        try {
+            const doc = await this.collection.doc(id.toString()).get();
+            if (!doc.exists) {
+                return { mensaje: "Dispositivo no encontrado", success: false, data: null };
+            }
+            return { mensaje: "Dispositivo encontrado", success: true, data: { id: doc.id, ...doc.data() } };
+        } catch (error) {
+            console.error('Error obteniendo dispositivo:', error);
+            return { mensaje: "Error al obtener el dispositivo", success: false, error };
+        }
+    }
+
     // Obtener dispositivo por código
     async getDeviceByCode(code: string) {
         try {
@@ -283,7 +298,7 @@ export class Device {
                     label: data.label,
                     isVisible: data.isVisible,
                     status: data.status,
-                    imageUrl: data.imagenUrl
+                    imageUrl: data.imageUrl
                 };
             });
 
@@ -297,6 +312,28 @@ export class Device {
             };
         } catch (error) {
             console.error('Error obteniendo dispositivos por sucursal:', error);
+            return { mensaje: "Error al obtener los dispositivos de la sucursal", success: false, error };
+        }
+    }
+
+    // Obtener todos los datos de dispositivos por sucursal
+    async getAllDeviceDataBySucursal(idSucursal: number) {
+        try {
+            // Obtener dispositivos de la sucursal con todos sus datos
+            const snapshot = await this.collection.where('idSucursal', '==', idSucursal).get();
+            
+            const devices = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+
+            return {
+                mensaje: "Dispositivos de la sucursal obtenidos correctamente",
+                success: true,
+                data: devices
+            };
+        } catch (error) {
+            console.error('Error obteniendo todos los datos de dispositivos por sucursal:', error);
             return { mensaje: "Error al obtener los dispositivos de la sucursal", success: false, error };
         }
     }
