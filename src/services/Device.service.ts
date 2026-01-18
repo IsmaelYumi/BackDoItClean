@@ -1,4 +1,6 @@
 import { db } from '../config/dbconfig.config';
+import { Sucursal } from './Sucursal.service';
+
 export enum DeviceType {
     WASHER = 'washer',
     DRYER = 'dryer'
@@ -10,10 +12,12 @@ export enum DeviceStatus {
 }
 export class Device {
     private collection = db.collection('Devices');
+    private sucursalService = new Sucursal();
 
     // Crear dispositivo
     async createDevice(
         id: number,
+        idSucursal:number,
         code: string,
         type: DeviceType,
         name: string,
@@ -26,11 +30,12 @@ export class Device {
         capacityKg: number,
         isVisible: boolean,
         status: DeviceStatus,
+        programGroups?: any[],
         error?: string,
         imageUrl?: string
     ) {
-        if (!name || !price || !code) {
-            return { mensaje: "Nombre, precio y código son requeridos", success: false };
+        if (!name || !price || !code || !idSucursal) {
+            return { mensaje: "Nombre, precio, código e idSucursal son requeridos", success: false };
         }
 
         try {
@@ -41,6 +46,7 @@ export class Device {
             }
             const device = {
                 id,
+                idSucursal,
                 code,
                 type,
                 name,
@@ -54,6 +60,7 @@ export class Device {
                 price,
                 isVisible,
                 status,
+                programGroups: programGroups || [],
                 error: error || null,
                 createdAt: new Date(),
                 updatedAt: new Date()
@@ -134,6 +141,7 @@ export class Device {
             type?: DeviceType;
             error?: string;
             imageUrl?: string;
+            programGroups?: any[];
         }
     ) {
         try {
@@ -213,7 +221,6 @@ export class Device {
                     });
                     continue;
                 }
-
                 const device = {
                     id: deviceData.id,
                     code: deviceData.code,
@@ -251,6 +258,48 @@ export class Device {
             createdCodes: results.success,
             failures: results.failed
         };
+    }
+
+    // Obtener dispositivos por sucursal con floor distribution
+    async getDevicesBySucursal(idSucursal: number) {
+        try {
+            // Obtener la sucursal para obtener el floor distribution
+            const sucursalResult = await this.sucursalService.getSucursalById(idSucursal);
+            
+            if (!sucursalResult.success || !sucursalResult.data) {
+                return { mensaje: "Sucursal no encontrada", success: false, data: null };
+            }
+
+            const sucursalData: any = sucursalResult.data;
+
+            // Obtener dispositivos de la sucursal
+            const snapshot = await this.collection.where('idSucursal', '==', idSucursal).get();
+            
+            // Mapear solo los campos requeridos
+            const devices = snapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: data.id,
+                    code: data.code,
+                    type: data.type,
+                    label: data.label,
+                    isVisible: data.isVisible,
+                    status: data.status
+                };
+            });
+
+            return {
+                mensaje: "Dispositivos de la sucursal obtenidos correctamente",
+                success: true,
+                data: {
+                    floorDistribution: sucursalData.floorDistribution,
+                    devices: devices
+                }
+            };
+        } catch (error) {
+            console.error('Error obteniendo dispositivos por sucursal:', error);
+            return { mensaje: "Error al obtener los dispositivos de la sucursal", success: false, error };
+        }
     }
 }
 

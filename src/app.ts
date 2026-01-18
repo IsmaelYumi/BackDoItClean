@@ -3,6 +3,7 @@ import deviceRoutes from './routes/device.routes';
 import productRoutes from './routes/product.routes';
 import serviceRoutes from './routes/service.routes';
 import userRoutes from './routes/user.routes';
+import sucursalRoutes from './routes/sucursal.routes';
 
 const app: Application = express();
 
@@ -20,5 +21,6 @@ app.use('/api', deviceRoutes);
 app.use('/api', productRoutes);
 app.use('/api', serviceRoutes);
 app.use('/api', userRoutes);
+app.use('/api', sucursalRoutes);
 
 export default app;

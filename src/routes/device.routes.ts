@@ -7,7 +7,8 @@ import {
   getDevicesByStatus,
   updateDevice,
   deleteDevice,
-  createMultipleDevices
+  createMultipleDevices,
+  getDevicesBySucursal
 } from '../controllers/Device.controller';
 
 const router = Router();
@@ -16,6 +17,7 @@ const router = Router();
 router.post('/devices/bulk', createMultipleDevices);
 router.post('/devices', createDevice);
 router.get('/devices', getAllDevices);
+router.get('/devices/sucursal/:idSucursal', getDevicesBySucursal);
 router.get('/devices/code/:code', getDeviceByCode);
 router.get('/devices/type/:type', getDevicesByType);
 router.get('/devices/status/:status', getDevicesByStatus);

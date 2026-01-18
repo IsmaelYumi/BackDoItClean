@@ -14,7 +14,6 @@ export const createUser = async (req: Request, res: Response) => {
     res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
   }
 };
-
 // Obtener usuario por ID
 export const getUserById = async (req: Request, res: Response) => {
   try {

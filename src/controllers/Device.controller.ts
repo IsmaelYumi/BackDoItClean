@@ -8,6 +8,7 @@ export const createDevice = async (req: Request, res: Response) => {
   try {
     const {
       id,
+      idSucursal,
       code,
       type,
       name,
@@ -20,12 +21,14 @@ export const createDevice = async (req: Request, res: Response) => {
       capacityKg,
       isVisible,
       status,
+      programGroups,
       error,
       imageUrl
     } = req.body;
 
     const result = await deviceService.createDevice(
       id,
+      idSucursal,
       code,
       type as DeviceType,
       name,
@@ -38,6 +41,7 @@ export const createDevice = async (req: Request, res: Response) => {
       capacityKg,
       isVisible,
       status as DeviceStatus,
+      programGroups,
       error,
       imageUrl
     );
@@ -133,6 +137,18 @@ export const createMultipleDevices = async (req: Request, res: Response) => {
     const result = await deviceService.createMultipleDevices(devices);
     const statusCode = result.success ? 201 : 207; // 207 Multi-Status si hay algunos fallidos
     res.status(statusCode).json(result);
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
+  }
+};
+
+// Obtener dispositivos por sucursal
+export const getDevicesBySucursal = async (req: Request, res: Response) => {
+  try {
+    const { idSucursal } = req.params;
+    const result = await deviceService.getDevicesBySucursal(Number(idSucursal));
+    const status = result.success ? 200 : 404;
+    res.status(status).json(result);
   } catch (error) {
     res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
   }
