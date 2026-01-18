@@ -18,7 +18,7 @@ export class Device {
     async createDevice(
         id: number,
         idSucursal:number,
-        code: string,
+        code: number,
         type: DeviceType,
         name: string,
         price: number,
@@ -40,7 +40,7 @@ export class Device {
 
         try {
             // Verificar si ya existe un dispositivo con ese código
-            const deviceDoc = await this.collection.doc(code).get();
+            const deviceDoc = await this.collection.doc(id.toString()).get();
             if (deviceDoc.exists) {
                 return { mensaje: "Ya existe un dispositivo con ese código", success: false };
             }
@@ -65,15 +65,13 @@ export class Device {
                 createdAt: new Date(),
                 updatedAt: new Date()
             };
-
-            await this.collection.doc(code).set(device);
+            await this.collection.doc(id.toString()).set(device);
             return { mensaje: "Dispositivo creado correctamente", success: true, code };
         } catch (error) {
             console.error('Error creando dispositivo:', error);
             return { mensaje: "Error al crear el dispositivo", success: false, error };
         }
     }
-
     // Obtener dispositivo por código
     async getDeviceByCode(code: string) {
         try {
@@ -181,7 +179,7 @@ export class Device {
     // Crear múltiples dispositivos
     async createMultipleDevices(devices: Array<{
         id: number;
-        code: string;
+        code: number;
         type: DeviceType;
         name: string;
         price: number;
@@ -197,8 +195,8 @@ export class Device {
         imageUrl?: string;
     }>) {
         const results = {
-            success: [] as string[],
-            failed: [] as { code: string; reason: string }[]
+            success: [] as number[],
+            failed: [] as { code: number | string; reason: string }[]
         };
 
         for (const deviceData of devices) {
@@ -206,14 +204,14 @@ export class Device {
                 // Validar campos requeridos
                 if (!deviceData.name || !deviceData.price || !deviceData.code) {
                     results.failed.push({
-                        code: deviceData.code || 'sin código',
+                        code: deviceData.code ?? 'sin código',
                         reason: 'Nombre, precio y código son requeridos'
                     });
                     continue;
                 }
 
                 // Verificar si ya existe
-                const deviceDoc = await this.collection.doc(deviceData.code).get();
+                const deviceDoc = await this.collection.doc(deviceData.id.toString()).get();
                 if (deviceDoc.exists) {
                     results.failed.push({
                         code: deviceData.code,
@@ -241,7 +239,7 @@ export class Device {
                     updatedAt: new Date()
                 };
 
-                await this.collection.doc(deviceData.code).set(device);
+                await this.collection.doc(deviceData.id.toString()).set(device);
                 results.success.push(deviceData.code);
             } catch (error) {
                 results.failed.push({
@@ -284,7 +282,8 @@ export class Device {
                     type: data.type,
                     label: data.label,
                     isVisible: data.isVisible,
-                    status: data.status
+                    status: data.status,
+                    imageUrl: data.imagenUrl
                 };
             });
 
