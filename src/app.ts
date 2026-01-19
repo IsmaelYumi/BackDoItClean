@@ -1,6 +1,7 @@
 import express, { Application } from 'express';
 import deviceRoutes from './routes/device.routes';
 import productRoutes from './routes/product.routes';
+import professionalCleanRoutes from './routes/professionalClean.routes';
 import serviceRoutes from './routes/service.routes';
 import userRoutes from './routes/user.routes';
 import sucursalRoutes from './routes/sucursal.routes';
@@ -19,6 +20,7 @@ app.get('/', (req, res) => {
 // Rutas de la API
 app.use('/api', deviceRoutes);
 app.use('/api', productRoutes);
+app.use('/api', professionalCleanRoutes);
 app.use('/api', serviceRoutes);
 app.use('/api', userRoutes);
 app.use('/api', sucursalRoutes);
