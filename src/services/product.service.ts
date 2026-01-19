@@ -1,28 +1,44 @@
 import { db } from '../config/dbconfig.config';
+
 export class productos{
-    private collection= db.collection('prodcuts')
-    async createProduct(id:number ,Nombre:string, precio:number,categoria:string,imagenUrl:string ,codigo:string,isVisible:number, descripccion?:string,){
-        if(!Nombre ||!precio){
-            return{mensaje: "No puedes registrar un producto sin su nombre y sin cantidad"}
+    private collection= db.collection('products')
+    async createProduct(
+        id: number,
+        code: number,
+        name: string,
+        price: number,
+        description: string,
+        category: string,
+        imageUrl: string,
+        isVisible: boolean,
+        programGroups?: any[]
+    ){
+        if(!name || !price || !code){
+            return{mensaje: "Nombre, precio y código son requeridos", success: false}
         }
         try{
-            const productDoc = await this.collection.doc(isVisible.toString()).get();
+            const productDoc = await this.collection.doc(id.toString()).get();
             if (productDoc.exists) {
-                return { mensaje: "Ya existe un producto con ese código", success: false };
+                return { mensaje: "Ya existe un producto con ese ID", success: false };
             }
             const product={
-            name:Nombre,
-            precio: precio,
-            descripccion:descripccion || null,
-            category:categoria,
-            imaegURL:imagenUrl,
-            code:codigo,
-            inVisible:isVisible,
+                id,
+                code,
+                name,
+                price,
+                description: description || '',
+                category: category || '',
+                imageUrl: imageUrl || '',
+                isVisible,
+                programGroups: programGroups || [],
+                createdAt: new Date(),
+                updatedAt: new Date()
             }
             await this.collection.doc(id.toString()).set(product)
-            return{mensaje:"Producto registrado correctamente", codigo}
+            return{mensaje:"Producto registrado correctamente", success: true, id}
         }catch(error){
-            return{mensaje:"Error al registrar el prodcuto", success:false}
+            console.error('Error creando producto:', error);
+            return{mensaje:"Error al registrar el producto", success:false, error}
         }
     }
     async getProductById(id: number) {
@@ -35,6 +51,25 @@ export class productos{
         } catch (error) {
             console.error('Error obteniendo producto:', error);
             throw error;
+        }
+    }
+    
+    async getAllProducts() {
+        try {
+            const snapshot = await this.collection.get();
+            const products = snapshot.docs.map(doc => ({
+                id: doc.id,
+                ...doc.data()
+            }));
+            return {
+                mensaje: products.length > 0 ? "Productos obtenidos correctamente" : "No hay productos registrados",
+                success: true,
+                data: products,
+                count: products.length
+            };
+        } catch (error) {
+            console.error('Error obteniendo productos:', error);
+            return { mensaje: "Error al obtener los productos", success: false, error };
         }
     }
     async DeleteProduct(id:number){
@@ -51,26 +86,27 @@ export class productos{
     }
     async createMultipleProducts(products: Array<{
         id: number;
-        Nombre: string;
-        precio: number;
-        categoria: string;
-        imagenUrl: string;
-        codigo: string;
-        isVisible: number;
-        descripccion?: string;
+        code: number;
+        name: string;
+        price: number;
+        description: string;
+        category: string;
+        imageUrl: string;
+        isVisible: boolean;
+        programGroups?: any[];
     }>) {
         const results = {
-            success: [] as string[],
-            failed: [] as { codigo: string; reason: string }[]
+            success: [] as number[],
+            failed: [] as { id: number | string; reason: string }[]
         };
 
         for (const productData of products) {
             try {
                 // Validar campos requeridos
-                if (!productData.Nombre || !productData.precio) {
+                if (!productData.name || !productData.price || !productData.code) {
                     results.failed.push({
-                        codigo: productData.codigo || 'sin código',
-                        reason: 'No puedes registrar un producto sin su nombre y sin precio'
+                        id: productData.id ?? 'sin ID',
+                        reason: 'Nombre, precio y código son requeridos'
                     });
                     continue;
                 }
@@ -79,29 +115,31 @@ export class productos{
                 const productDoc = await this.collection.doc(productData.id.toString()).get();
                 if (productDoc.exists) {
                     results.failed.push({
-                        codigo: productData.codigo,
+                        id: productData.id,
                         reason: 'Ya existe un producto con ese ID'
                     });
                     continue;
                 }
 
                 const product = {
-                    name: productData.Nombre,
-                    precio: productData.precio,
-                    descripccion: productData.descripccion || null,
-                    category: productData.categoria,
-                    imaegURL: productData.imagenUrl,
-                    code: productData.codigo,
-                    inVisible: productData.isVisible,
+                    id: productData.id,
+                    code: productData.code,
+                    name: productData.name,
+                    price: productData.price,
+                    description: productData.description || '',
+                    category: productData.category || '',
+                    imageUrl: productData.imageUrl || '',
+                    isVisible: productData.isVisible,
+                    programGroups: productData.programGroups || [],
                     createdAt: new Date(),
                     updatedAt: new Date()
                 };
 
                 await this.collection.doc(productData.id.toString()).set(product);
-                results.success.push(productData.codigo);
+                results.success.push(productData.id);
             } catch (error) {
                 results.failed.push({
-                    codigo: productData.codigo,
+                    id: productData.id,
                     reason: 'Error al crear el producto'
                 });
             }

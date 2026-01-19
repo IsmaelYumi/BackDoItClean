@@ -6,18 +6,41 @@ const productService = new productos();
 // Crear producto
 export const createProduct = async (req: Request, res: Response) => {
   try {
-    const { id, Nombre, precio, categoria, imagenUrl, codigo, isVisible, descripccion } = req.body;
+    const { 
+      id, 
+      code, 
+      name, 
+      price, 
+      description, 
+      category, 
+      imageUrl, 
+      isVisible, 
+      programGroups 
+    } = req.body;
+    
     const result = await productService.createProduct(
       id,
-      Nombre,
-      precio,
-      categoria,
-      imagenUrl,
-      codigo,
+      code,
+      name,
+      price,
+      description,
+      category,
+      imageUrl,
       isVisible,
-      descripccion
+      programGroups
     );
-    const status = result.codigo ? 201 : 400;
+    const status = result.success ? 201 : 400;
+    res.status(status).json(result);
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
+  }
+};
+
+// Obtener todos los productos
+export const getAllProducts = async (req: Request, res: Response) => {
+  try {
+    const result = await productService.getAllProducts();
+    const status = result.success ? 200 : 500;
     res.status(status).json(result);
   } catch (error) {
     res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
