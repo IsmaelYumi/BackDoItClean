@@ -7,12 +7,13 @@ export enum  UserRole{
   OPERATOR=3,
   CLIENT=4,
   SUPERADMIN=5,
+  GUEST=6
 }
 export class UserService {
   private collection = db.collection('users');
 
   // Crear usuario
-  async createUser(id: string, name: string, lastName:string, email:string, password:string, phone:string, idCard:string, role:string, rating?:number, profileURL?:string) {
+  async createUser(id: string, name: string, lastName:string, email:string, password:string, phone:string, idCard:string, role:UserRole, rating?:number, profileURL?:string) {
     try {
       // Encriptar la contraseña
       const saltRounds = 10;
@@ -53,7 +54,7 @@ export class UserService {
   // Obtener todos los usuarios
   async getAllUsers() {
     try {
-      const snapshot = await this.collection.where("rol","==","client").get();
+      const snapshot = await this.collection.where("role","==",UserRole.CLIENT).get();
       return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     } catch (error) {
       console.error('Error obteniendo usuarios:', error);
