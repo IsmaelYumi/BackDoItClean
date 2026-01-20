@@ -26,17 +26,18 @@ export class UserService {
     }
   }
   // Crear usuario
-  async createUser(name: string, lastName:string, email:string, phone:string, idCard:string, role:UserRole,password:string, rating?:number, profileURL?:string,) {
+  async createUser(name: string, lastName:string, email:string, phone:string, idCard:string, role:UserRole, password?:string, rating?:number, profileURL?:string) {
     try {
+      // Si el rol es CLIENT o no se proporciona password, usar un valor por defecto
+      let validPassword = password || "null";
       if(role==UserRole.CLIENT){
-        password="null";
+        validPassword="null";
       }
       // Generar el siguiente ID autoincrementable
       const id = await this.getNextId();
       // Encriptar la contraseña
       const saltRounds = 10;
-      const hashedPassword = await bcrypt.hash(password, saltRounds);
-
+      const hashedPassword = await bcrypt.hash(validPassword, saltRounds);
       await this.collection.doc(id.toString()).set({
         id,
         name,
