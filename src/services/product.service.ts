@@ -6,12 +6,16 @@ export class productos{
     // Obtener el siguiente ID autoincrementable
     private async getNextId(): Promise<number> {
         try {
-            const snapshot = await this.collection.orderBy('id', 'desc').limit(1).get();
+            const snapshot = await this.collection.get();
             if (snapshot.empty) {
                 return 1; // Si no hay productos, comenzar con ID 1
             }
-            const lastProduct = snapshot.docs[0].data();
-            return (lastProduct.id || 0) + 1;
+            // Obtener el máximo ID desde los doc.id
+            const maxId = snapshot.docs.reduce((max, doc) => {
+                const docId = parseInt(doc.id, 10);
+                return !isNaN(docId) && docId > max ? docId : max;
+            }, 0);
+            return maxId + 1;
         } catch (error) {
             console.error('Error obteniendo siguiente ID:', error);
             return 1;
