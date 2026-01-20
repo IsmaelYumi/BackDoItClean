@@ -7,7 +7,6 @@ const productService = new productos();
 export const createProduct = async (req: Request, res: Response) => {
   try {
     const { 
-      id, 
       code, 
       name, 
       price, 
@@ -19,7 +18,6 @@ export const createProduct = async (req: Request, res: Response) => {
     } = req.body;
     
     const result = await productService.createProduct(
-      id,
       code,
       name,
       price,

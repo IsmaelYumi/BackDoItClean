@@ -7,7 +7,6 @@ const sucursalService = new Sucursal();
 export const createSucursal = async (req: Request, res: Response) => {
   try {
     const {
-      idSucursal,
       nombre,
       numeroMaquinas,
       ud,
@@ -16,7 +15,6 @@ export const createSucursal = async (req: Request, res: Response) => {
     } = req.body;
 
     const result = await sucursalService.createSucursal(
-      idSucursal,
       nombre,
       numeroMaquinas,
       ud,

@@ -11,15 +11,32 @@ export enum  UserRole{
 }
 export class UserService {
   private collection = db.collection('users');
-
-  // Crear usuario
-  async createUser(id: string, name: string, lastName:string, email:string, password:string, phone:string, idCard:string, role:UserRole, rating?:number, profileURL?:string) {
+  // Obtener el siguiente ID autoincrementable
+  private async getNextId(): Promise<number> {
     try {
+      const snapshot = await this.collection.orderBy('id', 'desc').limit(1).get();
+      if (snapshot.empty) {
+        return 1; // Si no hay usuarios, comenzar con ID 1
+      }
+      const lastUser = snapshot.docs[0].data();
+      return (lastUser.id || 0) + 1;
+    } catch (error) {
+      console.error('Error obteniendo siguiente ID:', error);
+      return 1;
+    }
+  }
+  // Crear usuario
+  async createUser(name: string, lastName:string, email:string, password:string, phone:string, idCard:string, role:UserRole, rating?:number, profileURL?:string) {
+    try {
+      // Generar el siguiente ID autoincrementable
+      const id = await this.getNextId();
+      
       // Encriptar la contraseña
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
 
-      await this.collection.doc(id).set({
+      await this.collection.doc(id.toString()).set({
+        id,
         name,
         lastName,
         email,
@@ -39,9 +56,9 @@ export class UserService {
     }
   }
   // Obtener usuario por ID
-  async getUserById(userId: string) {
+  async getUserById(userId: number) {
     try {
-      const doc = await this.collection.doc(userId).get();
+      const doc = await this.collection.doc(userId.toString()).get();
       if (!doc.exists) {
         return null;
       }
@@ -62,9 +79,9 @@ export class UserService {
     }
   }
   // Actualizar usuario
-  async updateUser(userId: string, userData: any) {
+  async updateUser(userId: number, userData: any) {
     try {
-      await this.collection.doc(userId).update({
+      await this.collection.doc(userId.toString()).update({
         ...userData,
         updatedAt: new Date()
       });
@@ -74,18 +91,16 @@ export class UserService {
       throw error;
     }
   }
-
   // Eliminar usuario
-  async deleteUser(userId: string) {
+  async deleteUser(userId: number) {
     try {
-      await this.collection.doc(userId).delete();
+      await this.collection.doc(userId.toString()).delete();
       return { success: true, userId };
     } catch (error) {
       console.error('Error eliminando usuario:', error);
       throw error;
     }
   }
-
   // Login de usuario
   async loginUser(email: string, password: string) {
     try {

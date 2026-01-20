@@ -2,25 +2,39 @@ import { db } from '../config/dbconfig.config';
 
 export class productos{
     private collection= db.collection('products')
+    
+    // Obtener el siguiente ID autoincrementable
+    private async getNextId(): Promise<number> {
+        try {
+            const snapshot = await this.collection.orderBy('id', 'desc').limit(1).get();
+            if (snapshot.empty) {
+                return 1; // Si no hay productos, comenzar con ID 1
+            }
+            const lastProduct = snapshot.docs[0].data();
+            return (lastProduct.id || 0) + 1;
+        } catch (error) {
+            console.error('Error obteniendo siguiente ID:', error);
+            return 1;
+        }
+    }
+    
     async createProduct(
-        id: number,
         code: number,
         name: string,
         price: number,
         description: string,
         category: string,
         imageUrl: string,
-        isVisible: boolean,
+        isVisible: number,
         programGroups?: any[]
     ){
         if(!name || !price || !code){
             return{mensaje: "Nombre, precio y código son requeridos", success: false}
         }
         try{
-            const productDoc = await this.collection.doc(id.toString()).get();
-            if (productDoc.exists) {
-                return { mensaje: "Ya existe un producto con ese ID", success: false };
-            }
+            // Generar el siguiente ID autoincrementable
+            const id = await this.getNextId();
+            
             const product={
                 id,
                 code,
@@ -85,7 +99,6 @@ export class productos{
     }
     }
     async createMultipleProducts(products: Array<{
-        id: number;
         code: number;
         name: string;
         price: number;
@@ -97,7 +110,7 @@ export class productos{
     }>) {
         const results = {
             success: [] as number[],
-            failed: [] as { id: number | string; reason: string }[]
+            failed: [] as { code: number | string; reason: string }[]
         };
 
         for (const productData of products) {
@@ -105,24 +118,17 @@ export class productos{
                 // Validar campos requeridos
                 if (!productData.name || !productData.price || !productData.code) {
                     results.failed.push({
-                        id: productData.id ?? 'sin ID',
+                        code: productData.code ?? 'sin código',
                         reason: 'Nombre, precio y código son requeridos'
                     });
                     continue;
                 }
 
-                // Verificar si ya existe
-                const productDoc = await this.collection.doc(productData.id.toString()).get();
-                if (productDoc.exists) {
-                    results.failed.push({
-                        id: productData.id,
-                        reason: 'Ya existe un producto con ese ID'
-                    });
-                    continue;
-                }
+                // Generar el siguiente ID autoincrementable
+                const id = await this.getNextId();
 
                 const product = {
-                    id: productData.id,
+                    id,
                     code: productData.code,
                     name: productData.name,
                     price: productData.price,
@@ -135,11 +141,11 @@ export class productos{
                     updatedAt: new Date()
                 };
 
-                await this.collection.doc(productData.id.toString()).set(product);
-                results.success.push(productData.id);
+                await this.collection.doc(id.toString()).set(product);
+                results.success.push(id);
             } catch (error) {
                 results.failed.push({
-                    id: productData.id,
+                    code: productData.code,
                     reason: 'Error al crear el producto'
                 });
             }

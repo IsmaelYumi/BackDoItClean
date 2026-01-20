@@ -14,9 +14,23 @@ export class Device {
     private collection = db.collection('Devices');
     private sucursalService = new Sucursal();
 
+    // Obtener el siguiente ID autoincrementable
+    private async getNextId(): Promise<number> {
+        try {
+            const snapshot = await this.collection.orderBy('id', 'desc').limit(1).get();
+            if (snapshot.empty) {
+                return 1; // Si no hay dispositivos, comenzar con ID 1
+            }
+            const lastDevice = snapshot.docs[0].data();
+            return (lastDevice.id || 0) + 1;
+        } catch (error) {
+            console.error('Error obteniendo siguiente ID:', error);
+            return 1;
+        }
+    }
+
     // Crear dispositivo
     async createDevice(
-        id: number,
         idSucursal:number,
         code: number,
         type: DeviceType,
@@ -28,7 +42,7 @@ export class Device {
         model: string,
         category: string,
         capacityKg: number,
-        isVisible: boolean,
+        isVisible: number,
         status: DeviceStatus,
         programGroups?: any[],
         error?: string,
@@ -39,11 +53,9 @@ export class Device {
         }
 
         try {
-            // Verificar si ya existe un dispositivo con ese código
-            const deviceDoc = await this.collection.doc(id.toString()).get();
-            if (deviceDoc.exists) {
-                return { mensaje: "Ya existe un dispositivo con ese código", success: false };
-            }
+            // Generar el siguiente ID autoincrementable
+            const id = await this.getNextId();
+            
             const device = {
                 id,
                 idSucursal,
@@ -66,7 +78,7 @@ export class Device {
                 updatedAt: new Date()
             };
             await this.collection.doc(id.toString()).set(device);
-            return { mensaje: "Dispositivo creado correctamente", success: true, code };
+            return { mensaje: "Dispositivo creado correctamente", success: true, id, code };
         } catch (error) {
             console.error('Error creando dispositivo:', error);
             return { mensaje: "Error al crear el dispositivo", success: false, error };
@@ -193,8 +205,8 @@ export class Device {
 
     // Crear múltiples dispositivos
     async createMultipleDevices(devices: Array<{
-        id: number;
         code: number;
+        idSucursal: number;
         type: DeviceType;
         name: string;
         price: number;
@@ -225,17 +237,12 @@ export class Device {
                     continue;
                 }
 
-                // Verificar si ya existe
-                const deviceDoc = await this.collection.doc(deviceData.id.toString()).get();
-                if (deviceDoc.exists) {
-                    results.failed.push({
-                        code: deviceData.code,
-                        reason: 'Ya existe un dispositivo con ese código'
-                    });
-                    continue;
-                }
+                // Generar el siguiente ID autoincrementable
+                const id = await this.getNextId();
+                
                 const device = {
-                    id: deviceData.id,
+                    id,
+                    idSucursal: deviceData.idSucursal,
                     code: deviceData.code,
                     type: deviceData.type,
                     name: deviceData.name,
@@ -254,7 +261,7 @@ export class Device {
                     updatedAt: new Date()
                 };
 
-                await this.collection.doc(deviceData.id.toString()).set(device);
+                await this.collection.doc(id.toString()).set(device);
                 results.success.push(deviceData.code);
             } catch (error) {
                 results.failed.push({

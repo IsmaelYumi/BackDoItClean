@@ -6,8 +6,8 @@ const userService = new UserService();
 // Crear usuario
 export const createUser = async (req: Request, res: Response) => {
   try {
-    const { id, name, lastName, email, password, phone, idCard, role, rating, profileImageUrl } = req.body;
-    const result = await userService.createUser(id, name, lastName, email, password, phone, idCard, role, rating, profileImageUrl);
+    const { name, lastName, email, password, phone, idCard, role, rating, profileImageUrl } = req.body;
+    const result = await userService.createUser(name, lastName, email, password, phone, idCard, role, rating, profileImageUrl);
     const status = result.success ? 201 : 400;
     res.status(status).json(result);
   } catch (error) {
@@ -18,7 +18,7 @@ export const createUser = async (req: Request, res: Response) => {
 export const getUserById = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
-    const user = await userService.getUserById(userId);
+    const user = await userService.getUserById(Number(userId));
     if (!user) {
       return res.status(404).json({ mensaje: 'Usuario no encontrado', success: false });
     }
@@ -43,9 +43,9 @@ export const updateUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
     const userData = req.body;
-    const result = await userService.updateUser(userId, userData);
-    const status = result.success ? 200 : 404;
-    res.status(status).json(result);
+    const data = await userService.updateUser(Number(userId), userData);
+    const status = data.success ? 200 : 404;
+    res.status(status).json(data);
   } catch (error) {
     res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
   }
@@ -54,7 +54,7 @@ export const updateUser = async (req: Request, res: Response) => {
 export const deleteUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
-    const result = await userService.deleteUser(userId);
+    const result = await userService.deleteUser(Number(userId));
     const status = result.success ? 200 : 404;
     res.status(status).json(result);
   } catch (error) {

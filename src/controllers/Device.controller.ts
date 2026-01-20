@@ -7,7 +7,6 @@ const deviceService = new Device();
 export const createDevice = async (req: Request, res: Response) => {
   try {
     const {
-      id,
       idSucursal,
       code,
       type,
@@ -27,7 +26,6 @@ export const createDevice = async (req: Request, res: Response) => {
     } = req.body;
 
     const result = await deviceService.createDevice(
-      id,
       idSucursal,
       code,
       type as DeviceType,

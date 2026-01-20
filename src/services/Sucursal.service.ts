@@ -3,25 +3,36 @@ import { db } from '../config/dbconfig.config';
 export class Sucursal {
     private collection = db.collection('Sucursales');
 
+    // Obtener el siguiente ID autoincrementable
+    private async getNextId(): Promise<number> {
+        try {
+            const snapshot = await this.collection.orderBy('idSucursal', 'desc').limit(1).get();
+            if (snapshot.empty) {
+                return 1; // Si no hay sucursales, comenzar con ID 1
+            }
+            const lastSucursal = snapshot.docs[0].data();
+            return (lastSucursal.idSucursal || 0) + 1;
+        } catch (error) {
+            console.error('Error obteniendo siguiente ID:', error);
+            return 1;
+        }
+    }
+
     // Crear sucursal
     async createSucursal(
-        idSucursal: number,
         nombre: string,
         numeroMaquinas: number,
         ud: number,
         floorDistribution: string,
         fechaExpiracionLicencia?: Date
     ) {
-        if (!idSucursal || !nombre) {
-            return { mensaje: "ID y nombre de sucursal son requeridos", success: false };
+        if (!nombre) {
+            return { mensaje: "Nombre de sucursal es requerido", success: false };
         }
 
         try {
-            // Verificar si ya existe una sucursal con ese ID
-            const sucursalDoc = await this.collection.doc(idSucursal.toString()).get();
-            if (sucursalDoc.exists) {
-                return { mensaje: "Ya existe una sucursal con ese ID", success: false };
-            }
+            // Generar el siguiente ID autoincrementable
+            const idSucursal = await this.getNextId();
 
             const sucursal = {
                 idSucursal,

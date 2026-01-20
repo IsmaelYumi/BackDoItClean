@@ -3,8 +3,21 @@ import { db } from '../config/dbconfig.config';
 export class professionalCleans {
     private collection = db.collection('professionalCleans')
     
+    // Obtener el siguiente ID autoincrementable
+    private async getNextId(): Promise<number> {
+        try {
+            const snapshot = await this.collection.orderBy('id', 'desc').limit(1).get();
+            if (snapshot.empty) {
+                return 1; // Si no hay professional cleans, comenzar con ID 1
+            }
+            const lastProfessionalClean = snapshot.docs[0].data();
+            return (lastProfessionalClean.id || 0) + 1;
+        } catch (error) {
+            console.error('Error obteniendo siguiente ID:', error);
+            return 1;
+        }
+    }
     async createProfessionalClean(
-        id: number,
         code: number,
         name: string,
         price: number,
@@ -18,10 +31,8 @@ export class professionalCleans {
             return { mensaje: "Nombre, precio y código son requeridos", success: false }
         }
         try {
-            const professionalCleanDoc = await this.collection.doc(id.toString()).get();
-            if (professionalCleanDoc.exists) {
-                return { mensaje: "Ya existe un professional clean con ese ID", success: false };
-            }
+            // Generar el siguiente ID autoincrementable
+            const id = await this.getNextId();
             const professionalClean = {
                 id,
                 code,
@@ -42,7 +53,6 @@ export class professionalCleans {
             return { mensaje: "Error al registrar el professional clean", success: false, error }
         }
     }
-    
     async getProfessionalCleanById(id: number) {
         try {
             const doc = await this.collection.doc(id.toString()).get();
@@ -55,7 +65,6 @@ export class professionalCleans {
             throw error;
         }
     }
-    
     async getAllProfessionalCleans() {
         try {
             const snapshot = await this.collection.get();
@@ -74,7 +83,6 @@ export class professionalCleans {
             return { mensaje: "Error al obtener los professional cleans", success: false, error };
         }
     }
-    
     async DeleteProfessionalClean(id: number) {
         try {
             const doc = await this.collection.doc(id.toString()).get();
@@ -87,46 +95,34 @@ export class professionalCleans {
             return { mensaje: "Error al eliminar el professional clean", success: false };
         }
     }
-    
     async createMultipleProfessionalCleans(professionalCleans: Array<{
-        id: number;
         code: number;
         name: string;
         price: number;
         description: string;
         category: string;
         imageUrl: string;
-        isVisible: boolean;
+        isVisible: number;
         programGroups?: any[];
     }>) {
         const results = {
             success: [] as number[],
-            failed: [] as { id: number | string; reason: string }[]
+            failed: [] as { code: number | string; reason: string }[]
         };
-
         for (const professionalCleanData of professionalCleans) {
             try {
                 // Validar campos requeridos
                 if (!professionalCleanData.name || !professionalCleanData.price || !professionalCleanData.code) {
                     results.failed.push({
-                        id: professionalCleanData.id ?? 'sin ID',
+                        code: professionalCleanData.code ?? 'sin código',
                         reason: 'Nombre, precio y código son requeridos'
                     });
                     continue;
                 }
-
-                // Verificar si ya existe
-                const professionalCleanDoc = await this.collection.doc(professionalCleanData.id.toString()).get();
-                if (professionalCleanDoc.exists) {
-                    results.failed.push({
-                        id: professionalCleanData.id,
-                        reason: 'Ya existe un professional clean con ese ID'
-                    });
-                    continue;
-                }
-
+                // Generar el siguiente ID autoincrementable
+                const id = await this.getNextId();
                 const professionalClean = {
-                    id: professionalCleanData.id,
+                    id,
                     code: professionalCleanData.code,
                     name: professionalCleanData.name,
                     price: professionalCleanData.price,
@@ -139,16 +135,15 @@ export class professionalCleans {
                     updatedAt: new Date()
                 };
 
-                await this.collection.doc(professionalCleanData.id.toString()).set(professionalClean);
-                results.success.push(professionalCleanData.id);
+                await this.collection.doc(id.toString()).set(professionalClean);
+                results.success.push(id);
             } catch (error) {
                 results.failed.push({
-                    id: professionalCleanData.id,
+                    code: professionalCleanData.code,
                     reason: 'Error al crear el professional clean'
                 });
             }
         }
-
         return {
             mensaje: `Procesados ${professionalCleans.length} professional cleans: ${results.success.length} exitosos, ${results.failed.length} fallidos`,
             success: results.failed.length === 0,

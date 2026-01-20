@@ -5,28 +5,23 @@ export enum PaymentType {
     DEBIT_CREDIT_CARD = 'Debit/Credit Card',
     PHONE_PAY = 'Phone Pay'
 }
-
 export enum ServiceType {
     AUTO_SERVICE = 'AutoService',
     ORDER = 'Order',
     DRY_CLEANING = 'Dry Cleaning'
 }
-
 export enum DeviceTypeCart {
     WASHER = 'lavadora',
     DRYER = 'secadora'
 }
-
 interface CartItem {
     deviceType: DeviceTypeCart;
     deviceCode?: string;
     deviceName?: string;
     quantity?: number;
 }
-
 export class ServiceSales {
     private collection = db.collection('Service');
-
     // Crear nota de venta/servicio
     async createService(
         IdCliente: string,
@@ -273,5 +268,4 @@ export class ServiceSales {
         }
     }
 }
-
 export default new ServiceSales();
