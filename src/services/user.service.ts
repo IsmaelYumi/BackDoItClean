@@ -87,10 +87,25 @@ export class UserService {
   // Actualizar usuario
   async updateUser(userId: number, userData: any) {
     try {
-      await this.collection.doc(userId.toString()).update({
-        ...userData,
-        updatedAt: new Date()
-      });
+      // Campos permitidos para actualizar
+      const allowedFields = ['name', 'lastName', 'email', 'password', 'phone', 'idCard', 'role', 'rating', 'profileImageUrl'];
+      
+      // Filtrar solo los campos permitidos que vienen en userData
+      const updateData: any = { updatedAt: new Date() };
+      
+      for (const field of allowedFields) {
+        if (userData[field] != undefined) {
+          // Si es password, encriptarlo
+          if (field === 'password' && userData[field]) {
+            const saltRounds = 10;
+            updateData[field] = await bcrypt.hash(userData[field], saltRounds);
+          } else {
+            updateData[field] = userData[field];
+          }
+        }
+      }
+      console.log(updateData)
+      await this.collection.doc(userId.toString()).update(updateData);
       return { success: true, userId };
     } catch (error) {
       console.error('Error actualizando usuario:', error);

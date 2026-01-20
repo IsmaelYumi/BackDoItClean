@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
 import { UserService } from "../services/user.service";
-
 const userService = new UserService();
-
 // Crear usuario
 export const createUser = async (req: Request, res: Response) => {
   try {
@@ -37,7 +35,6 @@ export const getAllUsers = async (req: Request, res: Response) => {
     res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
   }
 };
-
 // Actualizar usuario
 export const updateUser = async (req: Request, res: Response) => {
   try {
