@@ -28,8 +28,6 @@ export const createSucursal = async (req: Request, res: Response) => {
     res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
   }
 };
-
-// Obtener sucursal por ID
 export const getSucursalById = async (req: Request, res: Response) => {
   try {
     const { idSucursal } = req.params;
@@ -40,8 +38,6 @@ export const getSucursalById = async (req: Request, res: Response) => {
     res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
   }
 };
-
-// Obtener todas las sucursales
 export const getAllSucursales = async (req: Request, res: Response) => {
   try {
     const result = await sucursalService.getAllSucursales();

@@ -26,11 +26,13 @@ export class UserService {
     }
   }
   // Crear usuario
-  async createUser(name: string, lastName:string, email:string, password:string, phone:string, idCard:string, role:UserRole, rating?:number, profileURL?:string) {
+  async createUser(name: string, lastName:string, email:string, phone:string, idCard:string, role:UserRole,password:string, rating?:number, profileURL?:string,) {
     try {
+      if(role==UserRole.CLIENT){
+        password="null";
+      }
       // Generar el siguiente ID autoincrementable
       const id = await this.getNextId();
-      
       // Encriptar la contraseña
       const saltRounds = 10;
       const hashedPassword = await bcrypt.hash(password, saltRounds);
