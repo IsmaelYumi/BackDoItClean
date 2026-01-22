@@ -1,0 +1,1530 @@
+[
+  {
+    "name": "T-Shirt",
+    "price": 4.0,
+    "description": "Professional cleaning of cotton or mixed-fabric T-shirts",
+    "imageUrl": "",
+    "code": 801,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 101,
+            "groupId": 0,
+            "label": "Wash and press",
+            "icon": 58835,
+            "priceDelta": 2.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 102,
+            "groupId": 0,
+            "label": "Wash and fold",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 103,
+            "groupId": 0,
+            "label": "Only Press",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Trousers",
+    "price": 4.0,
+    "description": "Professional cleaning of formal and casual trousers",
+    "imageUrl": "",
+    "code": 802,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 101,
+            "groupId": 0,
+            "label": "Wash and press",
+            "icon": 58835,
+            "priceDelta": 2.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 102,
+            "groupId": 0,
+            "label": "Wash and fold",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 103,
+            "groupId": 0,
+            "label": "Only Press",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Kandoora",
+    "price": 6.0,
+    "description": "Specialized cleaning for traditional kandoora garments",
+    "imageUrl": "",
+    "code": 803,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 6.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 101,
+            "groupId": 0,
+            "label": "Wash and press",
+            "icon": 58835,
+            "priceDelta": 4.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 102,
+            "groupId": 0,
+            "label": "Wash and fold",
+            "icon": 58835,
+            "priceDelta": 2.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 103,
+            "groupId": 0,
+            "label": "Only Press",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Ghatra",
+    "price": 6.0,
+    "description": "Gentle professional cleaning for headscarves",
+    "imageUrl": "",
+    "code": 804,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 4.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 101,
+            "groupId": 0,
+            "label": "Wash and press",
+            "icon": 58835,
+            "priceDelta": 4.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 102,
+            "groupId": 0,
+            "label": "Wash and fold",
+            "icon": 58835,
+            "priceDelta": 2.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 103,
+            "groupId": 0,
+            "label": "Only Press",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Lungi",
+    "price": 4.0,
+    "description": "Professional cleaning of traditional lungi garments",
+    "imageUrl": "",
+    "code": 805,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 4.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 101,
+            "groupId": 0,
+            "label": "Wash and press",
+            "icon": 58835,
+            "priceDelta": 2.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 102,
+            "groupId": 0,
+            "label": "Wash and fold",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 103,
+            "groupId": 0,
+            "label": "Only Press",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Shorts",
+    "price": 3.0,
+    "description": "Professional cleaning of casual shorts",
+    "imageUrl": "",
+    "code": 806,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 5.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 101,
+            "groupId": 0,
+            "label": "Wash and press",
+            "icon": 58835,
+            "priceDelta": 3.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 102,
+            "groupId": 0,
+            "label": "Wash and fold",
+            "icon": 58835,
+            "priceDelta": 1.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 103,
+            "groupId": 0,
+            "label": "Only Press",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Bowtie/Tie",
+    "price": 3.0,
+    "description": "Careful professional cleaning of ties and bowties",
+    "imageUrl": "",
+    "code": 807,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 5.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 101,
+            "groupId": 0,
+            "label": "Wash and press",
+            "icon": 58835,
+            "priceDelta": 2.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 102,
+            "groupId": 0,
+            "label": "Wash and fold",
+            "icon": 58835,
+            "priceDelta": 1.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 103,
+            "groupId": 0,
+            "label": "Only Press",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Coat/Jacket",
+    "price": 8.0,
+    "description": "Professional cleaning for coats and jackets",
+    "imageUrl": "",
+    "code": 808,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 12.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 101,
+            "groupId": 0,
+            "label": "Wash and press",
+            "icon": 58835,
+            "priceDelta": 7.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 102,
+            "groupId": 0,
+            "label": "Wash and fold",
+            "icon": 58835,
+            "priceDelta": 5.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 103,
+            "groupId": 0,
+            "label": "Only Press",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Leather Jacket",
+    "price": 35.0,
+    "description": "Specialized leather-safe cleaning treatment",
+    "imageUrl": "",
+    "code": 809,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Waist Coat",
+    "price": 4.0,
+    "description": "Professional cleaning of waist coats and vests",
+    "imageUrl": "",
+    "code": 810,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 11.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 101,
+            "groupId": 0,
+            "label": "Wash and press",
+            "icon": 58835,
+            "priceDelta": 6.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 102,
+            "groupId": 0,
+            "label": "Wash and fold",
+            "icon": 58835,
+            "priceDelta": 4.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 103,
+            "groupId": 0,
+            "label": "Only Press",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Suit (2-piece)",
+    "price": 12.0,
+    "description": "Complete professional cleaning of 2-piece suits",
+    "imageUrl": "",
+    "code": 811,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 13.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 103,
+            "groupId": 0,
+            "label": "Only Press",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Sweater/Pullover",
+    "price": 6.0,
+    "description": "Gentle cleaning for sweaters and pullovers",
+    "imageUrl": "",
+    "code": 812,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 8.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 101,
+            "groupId": 0,
+            "label": "Wash and press",
+            "icon": 58835,
+            "priceDelta": 4.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 102,
+            "groupId": 0,
+            "label": "Wash and fold",
+            "icon": 58835,
+            "priceDelta": 2.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 103,
+            "groupId": 0,
+            "label": "Only Press",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Abaya",
+    "price": 6.0,
+    "description": "Professional cleaning for abayas with fabric care",
+    "imageUrl": "",
+    "code": 813,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 8.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 101,
+            "groupId": 0,
+            "label": "Wash and press",
+            "icon": 58835,
+            "priceDelta": 4.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 102,
+            "groupId": 0,
+            "label": "Wash and fold",
+            "icon": 58835,
+            "priceDelta": 2.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 103,
+            "groupId": 0,
+            "label": "Only Press",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Skirt",
+    "price": 4.0,
+    "description": "Professional cleaning of skirts",
+    "imageUrl": "",
+    "code": 814,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 6.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 101,
+            "groupId": 0,
+            "label": "Wash and press",
+            "icon": 58835,
+            "priceDelta": 2.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 102,
+            "groupId": 0,
+            "label": "Wash and fold",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 103,
+            "groupId": 0,
+            "label": "Only Press",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Full dress",
+    "price": 10.0,
+    "description": "Professional cleaning of long or formal dresses",
+    "imageUrl": "",
+    "code": 815,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 10.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 101,
+            "groupId": 0,
+            "label": "Wash and press",
+            "icon": 58835,
+            "priceDelta": 2.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 102,
+            "groupId": 0,
+            "label": "Wash and fold",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 103,
+            "groupId": 0,
+            "label": "Only Press",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Short Dress",
+    "price": 4.0,
+    "description": "Professional cleaning of short dresses",
+    "imageUrl": "",
+    "code": 816,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 11.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 101,
+            "groupId": 0,
+            "label": "Wash and press",
+            "icon": 58835,
+            "priceDelta": 4.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 102,
+            "groupId": 0,
+            "label": "Wash and fold",
+            "icon": 58835,
+            "priceDelta": 2.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 103,
+            "groupId": 0,
+            "label": "Only Press",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Blouse",
+    "price": 4.0,
+    "description": "Professional cleaning of blouses and tops",
+    "imageUrl": "",
+    "code": 817,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 6.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 101,
+            "groupId": 0,
+            "label": "Wash and press",
+            "icon": 58835,
+            "priceDelta": 2.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 102,
+            "groupId": 0,
+            "label": "Wash and fold",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 103,
+            "groupId": 0,
+            "label": "Only Press",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Shela/Scarf",
+    "price": 4.0,
+    "description": "Delicate cleaning for scarves and shelas",
+    "imageUrl": "",
+    "code": 818,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 11.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 101,
+            "groupId": 0,
+            "label": "Wash and press",
+            "icon": 58835,
+            "priceDelta": 4.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 102,
+            "groupId": 0,
+            "label": "Wash and fold",
+            "icon": 58835,
+            "priceDelta": 2.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 103,
+            "groupId": 0,
+            "label": "Only Press",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Saree",
+    "price": 6.0,
+    "description": "Specialized professional cleaning for sarees",
+    "imageUrl": "",
+    "code": 819,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 14.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 101,
+            "groupId": 0,
+            "label": "Wash and press",
+            "icon": 58835,
+            "priceDelta": 2.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 103,
+            "groupId": 0,
+            "label": "Only Press",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Purse/Handbag",
+    "price": 6.0,
+    "description": "Professional cleaning of purses and handbags",
+    "imageUrl": "",
+    "code": 820,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 24.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 101,
+            "groupId": 0,
+            "label": "Wash and press",
+            "icon": 58835,
+            "priceDelta": -6.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 103,
+            "groupId": 0,
+            "label": "Only Press",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Pillow/Cushion",
+    "price": 20.0,
+    "description": "Professional cleaning of pillows and cushions",
+    "imageUrl": "",
+    "code": 821,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 101,
+            "groupId": 0,
+            "label": "Wash and press",
+            "icon": 58835,
+            "priceDelta": -20.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Stuffed Toy",
+    "price": 20.0,
+    "description": "Safe professional cleaning of stuffed toys",
+    "imageUrl": "",
+    "code": 822,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Duvet (small)",
+    "price": 20.0,
+    "description": "Professional cleaning of small-size duvets",
+    "imageUrl": "",
+    "code": 823,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 5.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 102,
+            "groupId": 0,
+            "label": "Wash and fold",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Duvet (medium)",
+    "price": 25.0,
+    "description": "Professional cleaning of medium-size duvets",
+    "imageUrl": "",
+    "code": 824,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 5.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 102,
+            "groupId": 0,
+            "label": "Wash and fold",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Duvet (Large)",
+    "price": 35.0,
+    "description": "Professional cleaning of large-size duvets",
+    "imageUrl": "",
+    "code": 825,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Shoes",
+    "price": 20.0,
+    "description": "Professional cleaning and care for shoes",
+    "imageUrl": "",
+    "code": 826,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Backpack",
+    "price": 30.0,
+    "description": "Professional cleaning of backpacks",
+    "imageUrl": "",
+    "code": 827,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Headcap",
+    "price": 5.0,
+    "description": "Gentle professional cleaning of headcaps",
+    "imageUrl": "",
+    "code": 828,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 10.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 102,
+            "groupId": 0,
+            "label": "Wash and fold",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Carpet (p-sqmt)",
+    "price": 15.0,
+    "description": "Professional carpet cleaning per square meter",
+    "imageUrl": "",
+    "code": 829,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Tablecloth (p-sqmt)",
+    "price": 4.0,
+    "description": "Professional tablecloth cleaning per square meter",
+    "imageUrl": "",
+    "code": 830,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 8.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 101,
+            "groupId": 0,
+            "label": "Wash and press",
+            "icon": 58835,
+            "priceDelta": 2.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 102,
+            "groupId": 0,
+            "label": "Wash and fold",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 103,
+            "groupId": 0,
+            "label": "Only Press",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Deep Clean",
+    "price": 20.0,
+    "description": "Intensive deep cleaning treatment",
+    "imageUrl": "",
+    "code": 831,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Extra Stonelery",
+    "price": 10.0,
+    "description": "Additional care for stone and jewelry garments",
+    "imageUrl": "",
+    "code": 832,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Pair of socks",
+    "price": 2.0,
+    "description": "Wash and press service for a pair of socks",
+    "imageUrl": "",
+    "code": 833,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 6.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 101,
+            "groupId": 0,
+            "label": "Wash and press",
+            "icon": 58835,
+            "priceDelta": 2.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 102,
+            "groupId": 0,
+            "label": "Wash and fold",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "name": "Inner wear",
+    "price": 2.0,
+    "description": "Wash and press service for inner wear",
+    "imageUrl": "",
+    "code": 834,
+    "isVisible": true,
+    "programGroups": [
+      {
+        "id": 0,
+        "name": "Select an option",
+        "selectionType": "single",
+        "minSelect": 1,
+        "maxSelect": 1,
+        "options": [
+          {
+            "id": 100,
+            "groupId": 0,
+            "label": "ProfessionalClean",
+            "icon": 58835,
+            "priceDelta": 6.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 101,
+            "groupId": 0,
+            "label": "Wash and press",
+            "icon": 58835,
+            "priceDelta": 2.0,
+            "durationMinutes": 0,
+            "notes": null
+          },
+          {
+            "id": 102,
+            "groupId": 0,
+            "label": "Wash and fold",
+            "icon": 58835,
+            "priceDelta": 0.0,
+            "durationMinutes": 0,
+            "notes": null
+          }
+        ]
+      }
+    ]
+  }
+]
