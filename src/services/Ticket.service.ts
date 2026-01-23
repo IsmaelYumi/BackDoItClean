@@ -71,6 +71,7 @@ export class Ticket{
             const snapshot = await this.ticketCollection.get();
             const tickets = snapshot.docs.map(doc => ({
                 id: doc.id,
+                type:"professionalClean",
                 ...doc.data()
             }));
             return {
