@@ -1,23 +1,23 @@
 import { Request, Response } from 'express';
-import { DryCleaning } from "../services/DryCleaning.service";
+import { Ticket } from "../services/Ticket.service";
 
-const dryCleaningService = new DryCleaning();
+const ticketService = new Ticket();
 
-// Crear DryCleaning
-export const createDryCleaning = async (req: Request, res: Response) => {
+// Crear Ticket
+export const createTicket = async (req: Request, res: Response) => {
   try {
     const { price, userId, paymentType, cartList } = req.body;
-    const result = await dryCleaningService.CreateDryCleaning(price, userId, paymentType, cartList);
+    const result = await ticketService.CreateTicket(price, userId, paymentType, cartList);
     const statusCode = result.success ? 201 : 400;
     res.status(statusCode).json(result);
   } catch (error) {
     res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
   }
 };
-// Obtener todos los DryCleanings
-export const getAllDryCleanings = async (req: Request, res: Response) => {
+// Obtener todos los Tickets
+export const getAllTickets = async (req: Request, res: Response) => {
   try {
-    const result = await dryCleaningService.GetAllDryCleanings();
+    const result = await ticketService.GetAllTickets();
     const statusCode = result.success ? 200 : 400;
     res.status(statusCode).json(result);
   } catch (error) {
@@ -25,11 +25,11 @@ export const getAllDryCleanings = async (req: Request, res: Response) => {
   }
 };
 
-// Obtener DryCleaning por ID
-export const getDryCleaningById = async (req: Request, res: Response) => {
+// Obtener Ticket por ID
+export const getTicketById = async (req: Request, res: Response) => {
   try {
-    const { dryCleaningId } = req.params;
-    const result = await dryCleaningService.GetDryCleaningById(dryCleaningId);
+    const { ticketId } = req.params;
+    const result = await ticketService.GetTicketById(ticketId);
     const statusCode = result.success ? 200 : 404;
     res.status(statusCode).json(result);
   } catch (error) {
@@ -37,11 +37,11 @@ export const getDryCleaningById = async (req: Request, res: Response) => {
   }
 };
 
-// Obtener DryCleanings por usuario
-export const getDryCleaningsByUser = async (req: Request, res: Response) => {
+// Obtener Tickets por usuario
+export const getTicketsByUser = async (req: Request, res: Response) => {
   try {
     const { userId } = req.params;
-    const result = await dryCleaningService.GetDryCleaningsByUser(userId);
+    const result = await ticketService.GetTicketsByUser(userId);
     const statusCode = result.success ? 200 : 400;
     res.status(statusCode).json(result);
   } catch (error) {
@@ -49,12 +49,12 @@ export const getDryCleaningsByUser = async (req: Request, res: Response) => {
   }
 };
 
-// Actualizar DryCleaning
-export const updateDryCleaning = async (req: Request, res: Response) => {
+// Actualizar Ticket
+export const updateTicket = async (req: Request, res: Response) => {
   try {
-    const { dryCleaningId } = req.params;
+    const { ticketId } = req.params;
     const updateData = req.body;
-    const result = await dryCleaningService.UpdateDryCleaning(dryCleaningId, updateData);
+    const result = await ticketService.UpdateTicket(ticketId, updateData);
     const statusCode = result.success ? 200 : 404;
     res.status(statusCode).json(result);
   } catch (error) {
@@ -62,12 +62,12 @@ export const updateDryCleaning = async (req: Request, res: Response) => {
   }
 };
 
-// Actualizar estado de DryCleaning
-export const updateDryCleaningStatus = async (req: Request, res: Response) => {
+// Actualizar estado de Ticket
+export const updateTicketStatus = async (req: Request, res: Response) => {
   try {
-    const { dryCleaningId } = req.params;
+    const { ticketId } = req.params;
     const { status } = req.body;
-    const result = await dryCleaningService.UpdateDryCleaningStatus(dryCleaningId, status);
+    const result = await ticketService.UpdateTicketStatus(ticketId, status);
     const statusCode = result.success ? 200 : 404;
     res.status(statusCode).json(result);
   } catch (error) {
@@ -75,11 +75,11 @@ export const updateDryCleaningStatus = async (req: Request, res: Response) => {
   }
 };
 
-// Eliminar DryCleaning
-export const deleteDryCleaning = async (req: Request, res: Response) => {
+// Eliminar Ticket
+export const deleteTicket = async (req: Request, res: Response) => {
   try {
-    const { dryCleaningId } = req.params;
-    const result = await dryCleaningService.DeleteDryCleaning(dryCleaningId);
+    const { ticketId } = req.params;
+    const result = await ticketService.DeleteTicket(ticketId);
     const statusCode = result.success ? 200 : 404;
     res.status(statusCode).json(result);
   } catch (error) {
