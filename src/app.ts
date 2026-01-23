@@ -5,6 +5,8 @@ import professionalCleanRoutes from './routes/professionalClean.routes';
 import serviceRoutes from './routes/service.routes';
 import userRoutes from './routes/user.routes';
 import sucursalRoutes from './routes/sucursal.routes';
+import dryCleaningRoutes from './routes/dryCleaning.routes';
+
 
 const app: Application = express();
 
@@ -24,5 +26,6 @@ app.use('/api', professionalCleanRoutes);
 app.use('/api', serviceRoutes);
 app.use('/api', userRoutes);
 app.use('/api', sucursalRoutes);
+app.use('/api', dryCleaningRoutes);
 
 export default app;
