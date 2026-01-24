@@ -6,8 +6,8 @@ const ticketService = new Ticket();
 // Crear Ticket
 export const createTicket = async (req: Request, res: Response) => {
   try {
-    const { price, userId, paymentType,status, cartList } = req.body;
-    const result = await ticketService.CreateTicket(price, userId, paymentType,status, cartList);
+    const { price, userId, paymentType, status, cartList } = req.body;
+    const result = await ticketService.CreateTicket(price, status, userId, paymentType, cartList);
     const statusCode = result.success ? 201 : 400;
     res.status(statusCode).json(result);
   } catch (error) {
