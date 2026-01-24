@@ -37,7 +37,7 @@ export class Ticket{
             throw error;
         }
     }
-    async CreateTicket(price: Number, user: string, paymentType: PaymentType, cartList: any[]) {
+    async CreateTicket(price: Number, status:StatusTicket,user: string, paymentType: PaymentType, cartList: any[]) {
         try {
             const nextId = await this.getNextId();
             const ticketRef = this.ticketCollection.doc(nextId.toString());
@@ -46,7 +46,7 @@ export class Ticket{
             const ticketData = {
                 id: nextId,
                 price: price,
-                status:  StatusTicket.OPEN,
+                status:  status,
                 userId: user,
                 paymentType: paymentType,
                 cartList: cartList,
