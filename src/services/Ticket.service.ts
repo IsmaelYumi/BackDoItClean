@@ -36,10 +36,11 @@ export class Ticket{
             throw error;
         }
     }
-    async CreateTicket(price: Number, status:StatusTicket,user: string, paymentType: PaymentType, cartList: any[], dueAt: string, createdAt:string, updatedAt:string,operatorId:string,printedAt?:string) {
+    async CreateTicket(price: Number, status:StatusTicket,user: string, paymentType: PaymentType, cartList: any[], dueAt: string, operatorId:string,printedAt?:string) {
         try {
             const nextId = await this.getNextId();
             const ticketRef = this.ticketCollection.doc(nextId.toString());
+            const currentDate = new Date();
             const ticketData = {
                 id: nextId,
                 price: price,
@@ -47,9 +48,10 @@ export class Ticket{
                 userId: user,
                 paymentType: paymentType,
                 cartList: cartList,
-                printedAt: printedAt || createdAt,
-                createdAt: createdAt ,
-                updatedAt: updatedAt, 
+                printedAt: printedAt || currentDate,
+                dueAt:dueAt,
+                createdAt: currentDate,
+                updatedAt: currentDate, 
                 operatorId:operatorId
             };
             await ticketRef.set(ticketData);
