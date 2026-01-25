@@ -6,11 +6,11 @@ const ticketService = new Ticket();
 // Crear Ticket
 export const createTicket = async (req: Request, res: Response) => {
   try {
-    const { price, userId, paymentType, status, cartList, dueAt, printedAt } = req.body;
+    const { price, userId, paymentType, status, cartList, dueAt, operatorId, printedAt } = req.body;
     const currentDate = new Date().toISOString();
     const createdAt = currentDate;
     const updatedAt = currentDate;
-    const result = await ticketService.CreateTicket(price, status, userId, paymentType, cartList, dueAt, createdAt, updatedAt, printedAt);
+    const result = await ticketService.CreateTicket(price, status, userId, paymentType, cartList, dueAt, createdAt, updatedAt, operatorId, printedAt);
     const statusCode = result.success ? 201 : 400;
     res.status(statusCode).json(result);
   } catch (error) {
