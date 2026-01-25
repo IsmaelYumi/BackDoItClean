@@ -11,7 +11,6 @@ export enum PaymentType{
 export class Ticket{
     private ticketCollection = db.collection("Tickets");
     private counterCollection = db.collection("Counters");
-
     async getNextId(): Promise<number> {
         const counterRef = this.counterCollection.doc("ticketCounter");
         
@@ -37,12 +36,10 @@ export class Ticket{
             throw error;
         }
     }
-    async CreateTicket(price: Number, status:StatusTicket,user: string, paymentType: PaymentType, cartList: any[]) {
+    async CreateTicket(price: Number, status:StatusTicket,user: string, paymentType: PaymentType, cartList: any[], dueAt: string, createdAt:string, updatedAt:string,printedAt?:string) {
         try {
             const nextId = await this.getNextId();
             const ticketRef = this.ticketCollection.doc(nextId.toString());
-            const currentDate = new Date();
-            
             const ticketData = {
                 id: nextId,
                 price: price,
@@ -50,8 +47,9 @@ export class Ticket{
                 userId: user,
                 paymentType: paymentType,
                 cartList: cartList,
-                createdAt: currentDate,
-                updatedAt: currentDate
+                printedAt: printedAt || createdAt,
+                createdAt: createdAt ,
+                updatedAt: updatedAt
             };
             await ticketRef.set(ticketData);
             return {

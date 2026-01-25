@@ -37,6 +37,9 @@ export class UserService {
       if(role==UserRole.CLIENT){
         validPassword="null";
       }
+      if(!name|| !phone){
+        return {success :false, id:0}
+      }
       // Generar el siguiente ID autoincrementable
       const id = await this.getNextId();
       // Encriptar la contraseña

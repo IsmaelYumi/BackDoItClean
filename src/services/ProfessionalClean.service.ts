@@ -35,6 +35,12 @@ export class professionalCleans {
             return { mensaje: "Nombre, precio y código son requeridos", success: false }
         }
         try {
+            // Verificar si ya existe un professional clean con el mismo nombre
+            const existingSnapshot = await this.collection.where('name', '==', name).get();
+            if (!existingSnapshot.empty) {
+                return { mensaje: "Ya existe un professional clean con ese nombre", success: false };
+            }
+            
             // Generar el siguiente ID autoincrementable
             const id = await this.getNextId();
             const professionalClean = {
@@ -123,6 +129,17 @@ export class professionalCleans {
                     });
                     continue;
                 }
+                
+                // Verificar si ya existe un professional clean con el mismo nombre
+                const existingSnapshot = await this.collection.where('name', '==', professionalCleanData.name).get();
+                if (!existingSnapshot.empty) {
+                    results.failed.push({
+                        code: professionalCleanData.code,
+                        reason: 'Ya existe un professional clean con ese nombre'
+                    });
+                    continue;
+                }
+                
                 // Generar el siguiente ID autoincrementable
                 const id = await this.getNextId();
                 const professionalClean = {
