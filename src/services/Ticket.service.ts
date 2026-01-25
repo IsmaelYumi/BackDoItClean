@@ -70,11 +70,17 @@ export class Ticket{
     async GetAllTickets() {
         try {
             const snapshot = await this.ticketCollection.get();
-            const tickets = snapshot.docs.map(doc => ({
-                id: doc.id,
-                type:"professionalClean",
-                ...doc.data()
-            }));
+            const tickets = snapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    type:"professionalClean",
+                    ...data,
+                    createdAt: data.createdAt?.toDate?.() ? data.createdAt.toDate().toISOString() : data.createdAt,
+                    updatedAt: data.updatedAt?.toDate?.() ? data.updatedAt.toDate().toISOString() : data.updatedAt,
+                    printedAt: data.printedAt?.toDate?.() ? data.printedAt.toDate().toISOString() : data.printedAt
+                };
+            });
             return {
                 success: true,
                 data: tickets
