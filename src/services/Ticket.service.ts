@@ -2,7 +2,8 @@ import {db} from '../config/dbconfig.config';
 export enum StatusTicket{
     OPEN="open",
     CLOSE="close",
-    NULLLED="nulled"
+    NULLLED="nulled",
+    TOPAY="toPay"
 }
 export enum PaymentType{
     CASH="cash",
@@ -36,7 +37,7 @@ export class Ticket{
             throw error;
         }
     }
-    async CreateTicket(price: Number, status:StatusTicket,user: string, paymentType: PaymentType, cartList: any[], dueAt: string, operatorId:string,printedAt?:string) {
+    async CreateTicket(price: Number, status:StatusTicket,user: string, paymentType: PaymentType, cartList: any[], dueAt: string, operatorId:string, paidAmount?: Number, printedAt?:string) {
         try {
             const nextId = await this.getNextId();
             const ticketRef = this.ticketCollection.doc(nextId.toString());
@@ -52,7 +53,8 @@ export class Ticket{
                 dueAt:dueAt,
                 createdAt: currentDate,
                 updatedAt: currentDate, 
-                operatorId:operatorId
+                operatorId:operatorId,
+                paidAmount: paidAmount || 0
             };
             await ticketRef.set(ticketData);
             return {
