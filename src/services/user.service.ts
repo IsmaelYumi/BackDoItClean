@@ -1,4 +1,5 @@
 // Ejemplo de uso de Firebase Firestore en un servici
+import { userInfo } from 'os';
 import { db } from '../config/dbconfig.config';
 import * as bcrypt from 'bcrypt';
 export enum  UserRole{
@@ -152,6 +153,36 @@ export class UserService {
       };
     } catch (error) {
       console.error('Error en login:', error);
+      throw error;
+    }
+  }
+  async updateCash(userId: string, newCashValue:number ){
+    try{
+      const docRef = this.collection.doc(userId.toString());
+      const doc = await docRef.get();
+      
+      if(!doc.exists){
+        return {success: false, message: 'Usuario no encontrado'}
+      }
+      
+      const userData=doc.data();
+      const currentCash = userData?.credit !== undefined ? userData.credit : 0;
+      const updatedCash = currentCash + newCashValue;
+      
+      await docRef.update({
+        credit: updatedCash,
+        updatedAt: new Date()
+      });
+      
+      return { 
+        success: true, 
+        userId,
+        previousCash: currentCash,
+        addedCash: newCashValue,
+        newCash: updatedCash
+      };
+    }catch(error ){
+      console.error('Error actualizando cash:', error);
       throw error;
     }
   }

@@ -1,4 +1,6 @@
 import {db} from '../config/dbconfig.config';
+import { UserService } from "../services/user.service";
+const userService = new UserService();
 export enum StatusTicket{
     OPEN="open",
     CLOSE="close",
@@ -37,7 +39,7 @@ export class Ticket{
             throw error;
         }
     }
-    async CreateTicket(price: Number, status:StatusTicket,user: string, paymentType: PaymentType, cartList: any[], dueAt: string, operatorId:string, changeAmount?: Number, paidAmount?: Number, printedAt?:string) {
+    async CreateTicket(price: number, status:StatusTicket,user: string, paymentType: PaymentType, cartList: any[], dueAt: string, operatorId:string, changeAmount: number, paidAmount: number, printedAt?:string) {
         try {
             const nextId = await this.getNextId();
             const ticketRef = this.ticketCollection.doc(nextId.toString());
@@ -57,11 +59,25 @@ export class Ticket{
                 paidAmount: paidAmount || 0,
                 changeAmount: changeAmount || 0
             };
+            // Crear el ticket
             await ticketRef.set(ticketData);
-            return {
+            const restante=Number(paidAmount)-Number(price)
+            const cashToAdd = restante - Number(changeAmount);
+            // Actualizar el cash del usuario (convertir a number)
+            console.log('paidAmount:', paidAmount, 'changeAmount:', changeAmount, 'cashToAdd:', cashToAdd);
+            const cashResult = await userService.updateCash(user, cashToAdd);
+            if(cashResult.success==true){
+                 return {
                 success: true,
-                ticketId: nextId
-            };
+                ticketId: nextId,
+                cashUpdated: cashResult
+            }
+   
+            }else{
+                return {
+                success: false,
+                message: "Eoor en al actualizacion del usuario"
+            }}
         } catch (error) {
             console.error("Error creating ticket:", error);
             return {
