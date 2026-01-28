@@ -6,7 +6,8 @@ import {
   getTicketsByUser,
   updateTicket,
   updateTicketStatus,
-  deleteTicket
+  deleteTicket,
+  getTicketsWithUsers
 } from '../controllers/Ticket.controller';
 
 const router = Router();
@@ -14,6 +15,7 @@ const router = Router();
 // Rutas de Ticket
 router.post('/ticket', createTicket);
 router.get('/ticket', getAllTickets);
+router.get('/ticket/with-users', getTicketsWithUsers);
 router.get('/ticket/:ticketId', getTicketById);
 router.get('/ticket/user/:userId', getTicketsByUser);
 router.put('/ticket/:ticketId', updateTicket);

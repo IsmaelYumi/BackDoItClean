@@ -1,4 +1,5 @@
 import {db} from '../config/dbconfig.config';
+import { getAllTickets } from '../controllers/Ticket.controller';
 import { UserService } from "../services/user.service";
 const userService = new UserService();
 export enum StatusTicket{
@@ -234,4 +235,58 @@ export class Ticket{
             };
         }
     }
+async GetTicket(){
+    try {
+        const tickets = await this.GetAllTickets();
+        
+        if(!tickets.success || !tickets.data) {
+            return { success: false, error: "No tickets found" };
+        }
+        
+        const datatickets = tickets.data;
+        // Convertir a string antes de crear el Set para asegurar unicidad
+        const userId: string[] = [...new Set(datatickets.map((ticket:any) => String(ticket.userId)))];
+        
+        // Buscar usuarios por ID
+        const userPromises = userId.map(id => userService.getUserById(Number(id)));
+        const usersResults = await Promise.all(userPromises);
+        
+        // Crear mapa de usuarios
+        const usersMap: {[key: string]: any} = {};
+        usersResults.forEach((user: any) => {
+            if(user && user.id) {
+                const userId = String(user.id);
+                usersMap[userId] = user;
+            }
+        });
+        
+        // Mapear tickets con datos específicos de usuario
+        const ticketsConUsuario = datatickets.map((ticket: any) => {
+            const ticketUserId = String(ticket.userId);
+            const user = usersMap[ticketUserId];
+            return {
+                id: ticket.id,
+                price: ticket.price,
+                status: ticket.status,
+                type: ticket.type,
+                userId: ticket.userId,
+                name: user?.name || null,
+                lastName: user?.lastName || null,
+                phone: user?.phone || null,
+                idCard: user?.idCard || null
+            };
+        });
+        
+        return {
+            success: true,
+            data: ticketsConUsuario
+        };
+    } catch (error) {
+        console.error("Error getting tickets with users:", error);
+        return {
+            success: false,
+            error: error
+        };
+    }
+}
 }

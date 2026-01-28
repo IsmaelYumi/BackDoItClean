@@ -86,3 +86,14 @@ export const deleteTicket = async (req: Request, res: Response) => {
     res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
   }
 };
+
+// Obtener Tickets con información de usuarios
+export const getTicketsWithUsers = async (req: Request, res: Response) => {
+  try {
+    const result = await ticketService.GetTicket();
+    const statusCode = result.success ? 200 : 400;
+    res.status(statusCode).json(result);
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
+  }
+};
