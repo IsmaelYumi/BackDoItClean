@@ -246,11 +246,9 @@ async GetTicket(){
         const datatickets = tickets.data;
         // Convertir a string antes de crear el Set para asegurar unicidad
         const userId: string[] = [...new Set(datatickets.map((ticket:any) => String(ticket.userId)))];
-        
         // Buscar usuarios por ID
         const userPromises = userId.map(id => userService.getUserById(Number(id)));
         const usersResults = await Promise.all(userPromises);
-        
         // Crear mapa de usuarios
         const usersMap: {[key: string]: any} = {};
         usersResults.forEach((user: any) => {
@@ -269,6 +267,7 @@ async GetTicket(){
                 price: ticket.price,
                 status: ticket.status,
                 type: ticket.type,
+                operatorId:ticket.operatorId,
                 userId: ticket.userId,
                 name: user?.name || null,
                 lastName: user?.lastName || null,
@@ -276,7 +275,6 @@ async GetTicket(){
                 idCard: user?.idCard || null
             };
         });
-        
         return {
             success: true,
             data: ticketsConUsuario
