@@ -4,10 +4,10 @@ import { Ticket } from "../services/Ticket.service";
 const ticketService = new Ticket();
 
 // Crear Ticket
-export const createTicket = async (req: Request, res: Response) => {
+export const createTicket = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { price, userId, paymentType, status, cartList, dueAt, operatorId, changeAmount, paidAmount, printedAt } = req.body;
-    const result = await ticketService.CreateTicket(price, status, userId, paymentType, cartList, dueAt, operatorId, changeAmount, paidAmount, printedAt);
+    const { price, userId, paymentType, status, cartList, dueAt, operatorId, changeAmount, paidAmount, type, printedAt, createdAt, updatedAt } = req.body;
+    const result = await ticketService.CreateTicket(price, status, userId, paymentType, cartList, dueAt, operatorId, changeAmount, paidAmount, type, printedAt, createdAt, updatedAt);
     const statusCode = result.success ? 201 : 400;
     res.status(statusCode).json(result);
   } catch (error) {
@@ -15,7 +15,7 @@ export const createTicket = async (req: Request, res: Response) => {
   }
 };
 // Obtener todos los Tickets
-export const getAllTickets = async (req: Request, res: Response) => {
+export const getAllTickets = async (req: Request, res: Response): Promise<void> => {
   try {
     const result = await ticketService.GetAllTickets();
     const statusCode = result.success ? 200 : 400;
@@ -26,7 +26,7 @@ export const getAllTickets = async (req: Request, res: Response) => {
 };
 
 // Obtener Ticket por ID
-export const getTicketById = async (req: Request, res: Response) => {
+export const getTicketById = async (req: Request, res: Response): Promise<void> => {
   try {
     const { ticketId } = req.params;
     const result = await ticketService.GetTicketById(ticketId);
@@ -38,7 +38,7 @@ export const getTicketById = async (req: Request, res: Response) => {
 };
 
 // Obtener Tickets por usuario
-export const getTicketsByUser = async (req: Request, res: Response) => {
+export const getTicketsByUser = async (req: Request, res: Response): Promise<void> => {
   try {
     const { userId } = req.params;
     const result = await ticketService.GetTicketsByUser(userId);
@@ -49,8 +49,29 @@ export const getTicketsByUser = async (req: Request, res: Response) => {
   }
 };
 
+// Buscar Tickets por fecha específica
+export const getTicketsByDate = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { date, operatorId } = req.body;
+    
+    if (!date) {
+      res.status(400).json({ 
+        mensaje: 'date es requerido (formato: YYYY-MM-DD)', 
+        success: false 
+      });
+      return;
+    }
+    
+    const result = await ticketService.GetTicketsByDate(date,operatorId);
+    const statusCode = result.success ? 200 : 400;
+    res.status(statusCode).json(result);
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
+  }
+};
+
 // Actualizar Ticket
-export const updateTicket = async (req: Request, res: Response) => {
+export const updateTicket = async (req: Request, res: Response): Promise<void> => {
   try {
     const { ticketId } = req.params;
     const updateData = req.body;
@@ -63,7 +84,7 @@ export const updateTicket = async (req: Request, res: Response) => {
 };
 
 // Actualizar estado de Ticket
-export const updateTicketStatus = async (req: Request, res: Response) => {
+export const updateTicketStatus = async (req: Request, res: Response): Promise<void> => {
   try {
     const { ticketId } = req.params;
     const { status } = req.body;
@@ -76,11 +97,22 @@ export const updateTicketStatus = async (req: Request, res: Response) => {
 };
 
 // Eliminar Ticket
-export const deleteTicket = async (req: Request, res: Response) => {
+export const deleteTicket = async (req: Request, res: Response): Promise<void> => {
   try {
     const { ticketId } = req.params;
     const result = await ticketService.DeleteTicket(ticketId);
     const statusCode = result.success ? 200 : 404;
+    res.status(statusCode).json(result);
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
+  }
+};
+
+// Obtener Tickets con información de usuarios
+export const getTicketsWithUsers = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const result = await ticketService.GetTicket();
+    const statusCode = result.success ? 200 : 400;
     res.status(statusCode).json(result);
   } catch (error) {
     res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });

@@ -1,4 +1,8 @@
 import {db} from '../config/dbconfig.config';
+import { getAllTickets } from '../controllers/Ticket.controller';
+import { UserService } from "../services/user.service";
+import admin from 'firebase-admin';
+const userService = new UserService();
 export enum StatusTicket{
     OPEN="open",
     CLOSE="close",
@@ -37,11 +41,10 @@ export class Ticket{
             throw error;
         }
     }
-    async CreateTicket(price: Number, status:StatusTicket,user: string, paymentType: PaymentType, cartList: any[], dueAt: string, operatorId:string, changeAmount?: Number, paidAmount?: Number, printedAt?:string) {
+    async CreateTicket(price: number, status:StatusTicket,user: string, paymentType: PaymentType, cartList: any[], dueAt: string, operatorId:string, changeAmount: number, paidAmount: number,type:string, printedAt?:string, createdAt?: string, updatedAt?: string) {
         try {
             const nextId = await this.getNextId();
             const ticketRef = this.ticketCollection.doc(nextId.toString());
-            const currentDate = new Date();
             const ticketData = {
                 id: nextId,
                 price: price,
@@ -49,19 +52,33 @@ export class Ticket{
                 userId: user,
                 paymentType: paymentType,
                 cartList: cartList,
-                printedAt: printedAt || currentDate,
+                printedAt: printedAt,
                 dueAt:dueAt,
-                createdAt: currentDate,
-                updatedAt: currentDate, 
+                createdAt: createdAt ,
+                updatedAt: updatedAt , 
                 operatorId:operatorId,
                 paidAmount: paidAmount || 0,
-                changeAmount: changeAmount || 0
+                changeAmount: changeAmount || 0,
+                type: type
             };
+            // Crear el ticket
             await ticketRef.set(ticketData);
-            return {
+            const restante=Number(paidAmount)-Number(price)
+            const cashToAdd = restante - Number(changeAmount);
+            // Actualizar el cash del usuario (convertir a number)
+            const cashResult = await userService.updateCash(user, cashToAdd);
+            if(cashResult.success==true){
+                 return {
                 success: true,
-                ticketId: nextId
-            };
+                ticketId: nextId,
+                cashUpdated: cashResult
+            }
+   
+            }else{
+                return {
+                success: false,
+                message: "Eoor en al actualizacion del usuario"
+            }}
         } catch (error) {
             console.error("Error creating ticket:", error);
             return {
@@ -77,7 +94,7 @@ export class Ticket{
                 const data = doc.data();
                 return {
                     id: doc.id,
-                    type:"professionalClean",
+                    type:data?.type || "professionalClean",
                     ...data,
                     createdAt: data.createdAt?.toDate?.() ? data.createdAt.toDate().toISOString() : data.createdAt,
                     updatedAt: data.updatedAt?.toDate?.() ? data.updatedAt.toDate().toISOString() : data.updatedAt,
@@ -105,11 +122,13 @@ export class Ticket{
                     error: "Ticket not found"
                 };
             }
+            const data = doc.data();
             return {
                 success: true,
                 data: {
                     id: doc.id,
-                    ...doc.data()
+                    ...data,
+                    type: data?.type || "professionalClean"
                 }
             };
         } catch (error) {
@@ -133,6 +152,93 @@ export class Ticket{
             };
         } catch (error) {
             console.error("Error getting tickets by user:", error);
+            return {
+                success: false,
+                error: error
+            };
+        }
+    }
+    async GetTicketsByDate(date: string, operatorId?:string) {
+        try {
+            // Parsear la fecha en formato ISO (2026-01-29T00:06:56.806999)
+            const inputDate = new Date(date);
+            
+            // Extraer año, mes y día para crear el rango del día completo
+            const year = inputDate.getFullYear();
+            const month = String(inputDate.getMonth() + 1).padStart(2, '0');
+            const day = String(inputDate.getDate()).padStart(2, '0');
+            
+            // Crear strings para el rango del día completo (YYYY-MM-DD)
+            const dateStart = `${year}-${month}-${day}T00:00:00`;
+            const dateEnd = `${year}-${month}-${day}T23:59:59`;
+            
+            console.log('Fecha recibida:', date);
+            console.log('dateStart:', dateStart);
+            console.log('dateEnd:', dateEnd);
+            
+            let query = this.ticketCollection
+                .where("createdAt", ">=", dateStart)
+                .where("createdAt", "<=", dateEnd);
+            
+            if(operatorId){
+                query = query.where("operatorId", "==", operatorId);
+                console.log('Filtrando por operatorId:', operatorId);
+            }
+            
+            const snapshot = await query.get();
+            console.log('Documentos encontrados:', snapshot.size);
+            if (snapshot.empty) {
+                return {
+                    success: true,
+                    data: [],
+                    count: 0
+                };
+            }
+            const datatickets = snapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    type: data?.type || "professionalClean",
+                    ...data,
+                    createdAt: data.createdAt?.toDate?.() ? data.createdAt.toDate().toISOString() : data.createdAt,
+                    updatedAt: data.updatedAt?.toDate?.() ? data.updatedAt.toDate().toISOString() : data.updatedAt,
+                    printedAt: data.printedAt?.toDate?.() ? data.printedAt.toDate().toISOString() : data.printedAt
+                };
+            });
+
+            // Convertir a string antes de crear el Set para asegurar unicidad
+            const userId: string[] = [...new Set(datatickets.map((ticket:any) => String(ticket.userId)))];
+            
+            // Buscar usuarios por ID
+            const userPromises = userId.map(id => userService.getUserById(Number(id)));
+            const usersResults = await Promise.all(userPromises);
+            
+            // Crear mapa de usuarios
+            const usersMap: {[key: string]: any} = {};
+            usersResults.forEach((user: any) => {
+                if(user && user.id) {
+                    const userId = String(user.id);
+                    usersMap[userId] = user;
+                }
+            });
+            
+            // Mapear tickets con información completa del ticket y usuario
+            const ticketsConUsuario = datatickets.map((ticket: any) => {
+                const ticketUserId = String(ticket.userId);
+                const user = usersMap[ticketUserId];
+                return {
+                    ...ticket,
+                    user: user || null
+                };
+            });
+            
+            return {
+                success: true,
+                data: ticketsConUsuario,
+                count: ticketsConUsuario.length
+            };
+        } catch (error) {
+            console.error("Error getting tickets by date:", error);
             return {
                 success: false,
                 error: error
@@ -218,4 +324,59 @@ export class Ticket{
             };
         }
     }
+async GetTicket(){
+    try {
+        const tickets = await this.GetAllTickets();
+        
+        if(!tickets.success || !tickets.data) {
+            return { success: false, error: "No tickets found" };
+        }
+        
+        const datatickets = tickets.data;
+        // Convertir a string antes de crear el Set para asegurar unicidad
+        const userId: string[] = [...new Set(datatickets.map((ticket:any) => String(ticket.userId)))];
+        // Buscar usuarios por ID
+        const userPromises = userId.map(id => userService.getUserById(Number(id)));
+        const usersResults = await Promise.all(userPromises);
+        // Crear mapa de usuarios
+        const usersMap: {[key: string]: any} = {};
+        usersResults.forEach((user: any) => {
+            if(user && user.id) {
+                const userId = String(user.id);
+                usersMap[userId] = user;
+            }
+        });
+        
+        // Mapear tickets con datos específicos de usuario
+        const ticketsConUsuario = datatickets.map((ticket: any) => {
+            const ticketUserId = String(ticket.userId);
+            const user = usersMap[ticketUserId];
+            return {
+                id: ticket.id,
+                price: ticket.price,
+                status: ticket.status,
+                type: ticket.type,
+                operatorId:ticket.operatorId,
+                userId: ticket.userId,
+                name: user?.name || null,
+                lastName: user?.lastName || null,
+                phone: user?.phone || null,
+                idCard: user?.idCard || null
+            };
+        });
+        return {
+            success: true,
+            data: ticketsConUsuario
+        };
+    } catch (error) {
+        console.error("Error getting tickets with users:", error);
+        return {
+            success: false,
+            error: error
+        };
+    }
+}
+async UpdateProgramOptions(){
+    
+}
 }
