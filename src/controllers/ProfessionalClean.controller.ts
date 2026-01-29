@@ -7,7 +7,6 @@ const professionalCleanService = new professionalCleans();
 export const createProfessionalClean = async (req: Request, res: Response) => {
   try {
     const { 
-      code, 
       name, 
       price, 
       description, 
@@ -18,7 +17,6 @@ export const createProfessionalClean = async (req: Request, res: Response) => {
     } = req.body;
     
     const result = await professionalCleanService.createProfessionalClean(
-      code,
       name,
       price,
       description,
