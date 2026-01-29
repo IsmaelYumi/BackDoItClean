@@ -105,6 +105,54 @@ export class professionalCleans {
             return { mensaje: "Error al eliminar el professional clean", success: false };
         }
     }
+    async updateProfessionalClean(
+        id: number,
+        updateData: {
+            code?: number;
+            name?: string;
+            price?: number;
+            description?: string;
+            category?: string;
+            imageUrl?: string;
+            isVisible?: boolean;
+            programGroups?: any[];
+        }
+    ) {
+        try {
+            const docRef = this.collection.doc(id.toString());
+            const doc = await docRef.get();
+            
+            if (!doc.exists) {
+                return { mensaje: "Professional clean no encontrado", success: false };
+            }
+            
+            // Si se está actualizando el nombre, verificar que no exista otro con ese nombre
+            if (updateData.name) {
+                const existingSnapshot = await this.collection
+                    .where('name', '==', updateData.name)
+                    .get();
+                
+                if (!existingSnapshot.empty && existingSnapshot.docs[0].id !== id.toString()) {
+                    return { mensaje: "Ya existe un professional clean con ese nombre", success: false };
+                }
+            }
+            
+            const dataToUpdate = {
+                ...updateData,
+            };
+            
+            await docRef.update(dataToUpdate);
+            
+            return { 
+                mensaje: "Professional clean actualizado correctamente", 
+                success: true,
+                data: { id, ...dataToUpdate }
+            };
+        } catch (error) {
+            console.error('Error actualizando professional clean:', error);
+            return { mensaje: "Error al actualizar el professional clean", success: false, error };
+        }
+    }
     async createMultipleProfessionalCleans(professionalCleans: Array<{
         code: number;
         name: string;

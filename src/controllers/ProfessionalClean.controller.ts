@@ -69,6 +69,19 @@ export const deleteProfessionalClean = async (req: Request, res: Response) => {
   }
 };
 
+// Actualizar professional clean
+export const updateProfessionalClean = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const updateData = req.body;
+    const result = await professionalCleanService.updateProfessionalClean(Number(id), updateData);
+    const status = result.success ? 200 : 404;
+    res.status(status).json(result);
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
+  }
+};
+
 // Crear múltiples professional cleans
 export const createMultipleProfessionalCleans = async (req: Request, res: Response) => {
   try {
