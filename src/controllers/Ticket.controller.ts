@@ -6,8 +6,8 @@ const ticketService = new Ticket();
 // Crear Ticket
 export const createTicket = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { price, userId, paymentType, status, cartList, dueAt, operatorId, changeAmount, paidAmount, type, printedAt } = req.body;
-    const result = await ticketService.CreateTicket(price, status, userId, paymentType, cartList, dueAt, operatorId, changeAmount, paidAmount, type, printedAt);
+    const { price, userId, paymentType, status, cartList, dueAt, operatorId, changeAmount, paidAmount, type, printedAt, createdAt, updatedAt } = req.body;
+    const result = await ticketService.CreateTicket(price, status, userId, paymentType, cartList, dueAt, operatorId, changeAmount, paidAmount, type, printedAt, createdAt, updatedAt);
     const statusCode = result.success ? 201 : 400;
     res.status(statusCode).json(result);
   } catch (error) {
@@ -42,6 +42,27 @@ export const getTicketsByUser = async (req: Request, res: Response): Promise<voi
   try {
     const { userId } = req.params;
     const result = await ticketService.GetTicketsByUser(userId);
+    const statusCode = result.success ? 200 : 400;
+    res.status(statusCode).json(result);
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
+  }
+};
+
+// Buscar Tickets por fecha específica
+export const getTicketsByDate = async (req: Request, res: Response): Promise<void> => {
+  try {
+    const { date, operatorId } = req.body;
+    
+    if (!date) {
+      res.status(400).json({ 
+        mensaje: 'date es requerido (formato: YYYY-MM-DD)', 
+        success: false 
+      });
+      return;
+    }
+    
+    const result = await ticketService.GetTicketsByDate(date,operatorId);
     const statusCode = result.success ? 200 : 400;
     res.status(statusCode).json(result);
   } catch (error) {

@@ -1,6 +1,7 @@
 import {db} from '../config/dbconfig.config';
 import { getAllTickets } from '../controllers/Ticket.controller';
 import { UserService } from "../services/user.service";
+import admin from 'firebase-admin';
 const userService = new UserService();
 export enum StatusTicket{
     OPEN="open",
@@ -40,7 +41,7 @@ export class Ticket{
             throw error;
         }
     }
-    async CreateTicket(price: number, status:StatusTicket,user: string, paymentType: PaymentType, cartList: any[], dueAt: string, operatorId:string, changeAmount: number, paidAmount: number,type:string, printedAt?:string) {
+    async CreateTicket(price: number, status:StatusTicket,user: string, paymentType: PaymentType, cartList: any[], dueAt: string, operatorId:string, changeAmount: number, paidAmount: number,type:string, printedAt?:string, createdAt?: Date, updatedAt?: Date) {
         try {
             const nextId = await this.getNextId();
             const ticketRef = this.ticketCollection.doc(nextId.toString());
@@ -54,8 +55,8 @@ export class Ticket{
                 cartList: cartList,
                 printedAt: printedAt || currentDate,
                 dueAt:dueAt,
-                createdAt: currentDate,
-                updatedAt: currentDate, 
+                createdAt: createdAt || currentDate,
+                updatedAt: updatedAt || currentDate, 
                 operatorId:operatorId,
                 paidAmount: paidAmount || 0,
                 changeAmount: changeAmount || 0,
@@ -152,6 +153,93 @@ export class Ticket{
             };
         } catch (error) {
             console.error("Error getting tickets by user:", error);
+            return {
+                success: false,
+                error: error
+            };
+        }
+    }
+    async GetTicketsByDate(date: string, operatorId?:string) {
+        try {
+            // Parsear la fecha en formato YYYY-MM-DD y crear el rango del día completo
+            const [year, month, day] = date.split('-').map(Number);
+            const searchDate = new Date(year, month - 1, day, 0, 0, 0, 0);
+            const endDate = new Date(year, month - 1, day, 23, 59, 59, 999);
+            
+            console.log('Fecha recibida:', date);
+            console.log('searchDate:', searchDate);
+            console.log('endDate:', endDate);
+            
+            // Convertir las fechas de JavaScript a Timestamps de Firestore
+            const startTimestamp = admin.firestore.Timestamp.fromDate(searchDate);
+            const endTimestamp = admin.firestore.Timestamp.fromDate(endDate);
+            
+            console.log('startTimestamp:', startTimestamp.toDate());
+            console.log('endTimestamp:', endTimestamp.toDate());
+            
+            let query = this.ticketCollection
+                .where("createdAt", ">=", startTimestamp)
+                .where("createdAt", "<=", endTimestamp);
+            
+            if(operatorId){
+                query = query.where("operatorId", "==", operatorId);
+                console.log('Filtrando por operatorId:', operatorId);
+            }
+            
+            const snapshot = await query.get();
+            console.log('Documentos encontrados:', snapshot.size);
+            if (snapshot.empty) {
+                return {
+                    success: true,
+                    data: [],
+                    count: 0
+                };
+            }
+            const datatickets = snapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    type: data?.type || "professionalClean",
+                    ...data,
+                    createdAt: data.createdAt?.toDate?.() ? data.createdAt.toDate().toISOString() : data.createdAt,
+                    updatedAt: data.updatedAt?.toDate?.() ? data.updatedAt.toDate().toISOString() : data.updatedAt,
+                    printedAt: data.printedAt?.toDate?.() ? data.printedAt.toDate().toISOString() : data.printedAt
+                };
+            });
+
+            // Convertir a string antes de crear el Set para asegurar unicidad
+            const userId: string[] = [...new Set(datatickets.map((ticket:any) => String(ticket.userId)))];
+            
+            // Buscar usuarios por ID
+            const userPromises = userId.map(id => userService.getUserById(Number(id)));
+            const usersResults = await Promise.all(userPromises);
+            
+            // Crear mapa de usuarios
+            const usersMap: {[key: string]: any} = {};
+            usersResults.forEach((user: any) => {
+                if(user && user.id) {
+                    const userId = String(user.id);
+                    usersMap[userId] = user;
+                }
+            });
+            
+            // Mapear tickets con información completa del ticket y usuario
+            const ticketsConUsuario = datatickets.map((ticket: any) => {
+                const ticketUserId = String(ticket.userId);
+                const user = usersMap[ticketUserId];
+                return {
+                    ...ticket,
+                    user: user || null
+                };
+            });
+            
+            return {
+                success: true,
+                data: ticketsConUsuario,
+                count: ticketsConUsuario.length
+            };
+        } catch (error) {
+            console.error("Error getting tickets by date:", error);
             return {
                 success: false,
                 error: error
@@ -288,5 +376,8 @@ async GetTicket(){
             error: error
         };
     }
+}
+async UpdateProgramOptions(){
+    
 }
 }
