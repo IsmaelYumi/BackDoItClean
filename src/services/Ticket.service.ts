@@ -41,11 +41,10 @@ export class Ticket{
             throw error;
         }
     }
-    async CreateTicket(price: number, status:StatusTicket,user: string, paymentType: PaymentType, cartList: any[], dueAt: string, operatorId:string, changeAmount: number, paidAmount: number,type:string, printedAt?:string, createdAt?: Date, updatedAt?: Date) {
+    async CreateTicket(price: number, status:StatusTicket,user: string, paymentType: PaymentType, cartList: any[], dueAt: string, operatorId:string, changeAmount: number, paidAmount: number,type:string, printedAt?:string, createdAt?: string, updatedAt?: string) {
         try {
             const nextId = await this.getNextId();
             const ticketRef = this.ticketCollection.doc(nextId.toString());
-            const currentDate = new Date();
             const ticketData = {
                 id: nextId,
                 price: price,
@@ -53,10 +52,10 @@ export class Ticket{
                 userId: user,
                 paymentType: paymentType,
                 cartList: cartList,
-                printedAt: printedAt || currentDate,
+                printedAt: printedAt,
                 dueAt:dueAt,
-                createdAt: createdAt || currentDate,
-                updatedAt: updatedAt || currentDate, 
+                createdAt: createdAt ,
+                updatedAt: updatedAt , 
                 operatorId:operatorId,
                 paidAmount: paidAmount || 0,
                 changeAmount: changeAmount || 0,
@@ -161,25 +160,25 @@ export class Ticket{
     }
     async GetTicketsByDate(date: string, operatorId?:string) {
         try {
-            // Parsear la fecha en formato YYYY-MM-DD y crear el rango del día completo
-            const [year, month, day] = date.split('-').map(Number);
-            const searchDate = new Date(year, month - 1, day, 0, 0, 0, 0);
-            const endDate = new Date(year, month - 1, day, 23, 59, 59, 999);
+            // Parsear la fecha en formato ISO (2026-01-29T00:06:56.806999)
+            const inputDate = new Date(date);
+            
+            // Extraer año, mes y día para crear el rango del día completo
+            const year = inputDate.getFullYear();
+            const month = String(inputDate.getMonth() + 1).padStart(2, '0');
+            const day = String(inputDate.getDate()).padStart(2, '0');
+            
+            // Crear strings para el rango del día completo (YYYY-MM-DD)
+            const dateStart = `${year}-${month}-${day}T00:00:00`;
+            const dateEnd = `${year}-${month}-${day}T23:59:59`;
             
             console.log('Fecha recibida:', date);
-            console.log('searchDate:', searchDate);
-            console.log('endDate:', endDate);
-            
-            // Convertir las fechas de JavaScript a Timestamps de Firestore
-            const startTimestamp = admin.firestore.Timestamp.fromDate(searchDate);
-            const endTimestamp = admin.firestore.Timestamp.fromDate(endDate);
-            
-            console.log('startTimestamp:', startTimestamp.toDate());
-            console.log('endTimestamp:', endTimestamp.toDate());
+            console.log('dateStart:', dateStart);
+            console.log('dateEnd:', dateEnd);
             
             let query = this.ticketCollection
-                .where("createdAt", ">=", startTimestamp)
-                .where("createdAt", "<=", endTimestamp);
+                .where("createdAt", ">=", dateStart)
+                .where("createdAt", "<=", dateEnd);
             
             if(operatorId){
                 query = query.where("operatorId", "==", operatorId);
