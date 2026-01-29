@@ -40,7 +40,7 @@ export class Ticket{
             throw error;
         }
     }
-    async CreateTicket(price: number, status:StatusTicket,user: string, paymentType: PaymentType, cartList: any[], dueAt: string, operatorId:string, changeAmount: number, paidAmount: number, printedAt?:string) {
+    async CreateTicket(price: number, status:StatusTicket,user: string, paymentType: PaymentType, cartList: any[], dueAt: string, operatorId:string, changeAmount: number, paidAmount: number,type:string, printedAt?:string) {
         try {
             const nextId = await this.getNextId();
             const ticketRef = this.ticketCollection.doc(nextId.toString());
@@ -58,14 +58,14 @@ export class Ticket{
                 updatedAt: currentDate, 
                 operatorId:operatorId,
                 paidAmount: paidAmount || 0,
-                changeAmount: changeAmount || 0
+                changeAmount: changeAmount || 0,
+                type: type
             };
             // Crear el ticket
             await ticketRef.set(ticketData);
             const restante=Number(paidAmount)-Number(price)
             const cashToAdd = restante - Number(changeAmount);
             // Actualizar el cash del usuario (convertir a number)
-            console.log('paidAmount:', paidAmount, 'changeAmount:', changeAmount, 'cashToAdd:', cashToAdd);
             const cashResult = await userService.updateCash(user, cashToAdd);
             if(cashResult.success==true){
                  return {
@@ -94,7 +94,7 @@ export class Ticket{
                 const data = doc.data();
                 return {
                     id: doc.id,
-                    type:"professionalClean",
+                    type:data?.type || "professionalClean",
                     ...data,
                     createdAt: data.createdAt?.toDate?.() ? data.createdAt.toDate().toISOString() : data.createdAt,
                     updatedAt: data.updatedAt?.toDate?.() ? data.updatedAt.toDate().toISOString() : data.updatedAt,
@@ -122,11 +122,13 @@ export class Ticket{
                     error: "Ticket not found"
                 };
             }
+            const data = doc.data();
             return {
                 success: true,
                 data: {
                     id: doc.id,
-                    ...doc.data()
+                    ...data,
+                    type: data?.type || "professionalClean"
                 }
             };
         } catch (error) {
