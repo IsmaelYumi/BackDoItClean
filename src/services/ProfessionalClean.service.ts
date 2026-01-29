@@ -31,7 +31,7 @@ export class professionalCleans {
         isVisible: boolean,
         programGroups?: any[]
     ) {
-        if (!name || !price || !code) {
+        if (!name|| !code) {
             return { mensaje: "Nombre, precio y código son requeridos", success: false }
         }
         try {
