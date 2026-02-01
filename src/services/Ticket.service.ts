@@ -63,7 +63,6 @@ export class Ticket{
             };
             // Crear el ticket
             await ticketRef.set(ticketData);
-            
             // Solo actualizar el cash del usuario si el estado no es "open"
             if (status !== StatusTicket.OPEN) {
                 const restante = Number(paidAmount) - Number(price);
