@@ -63,12 +63,12 @@ export class Ticket{
             };
             // Crear el ticket
             await ticketRef.set(ticketData);
-            
             // Solo actualizar el cash del usuario si el estado NO es "open"
             if (status !== StatusTicket.OPEN) {
                 const restante = Number(paidAmount) - Number(price);
                 const cashToAdd = restante - Number(changeAmount);
-                // Actualizar el cash del usuario (convertir a number)
+                console.log('Actualizando cash del usuario:', { user, cashToAdd, restante, changeAmount });
+                // Actualizar el cash del usuario (convertir a number) - permite valores negativos
                 const cashResult = await userService.updateCash(user, cashToAdd);
                 if (cashResult.success === true) {
                     return {
@@ -266,10 +266,44 @@ export class Ticket{
                     error: "Ticket not found"
                 };
             }
+            
+            const currentData = doc.data();
+            const oldStatus = currentData?.status;
+            const newStatus = updateData.status || oldStatus;
+            
+            // Actualizar el ticket
             const dataToUpdate = {
                 ...updateData,
             };
             await ticketRef.update(dataToUpdate);
+            
+            // Si el status cambió y el nuevo status NO es "open", actualizar el cash del usuario
+            if (updateData.status && oldStatus !== newStatus && newStatus !== StatusTicket.OPEN) {
+                const price = updateData.price !== undefined ? updateData.price : currentData?.price;
+                const paidAmount = updateData.paidAmount !== undefined ? updateData.paidAmount : currentData?.paidAmount || 0;
+                const changeAmount = updateData.changeAmount !== undefined ? updateData.changeAmount : currentData?.changeAmount || 0;
+                const userId = currentData?.userId;
+                
+                const restante = Number(paidAmount) - Number(price);
+                const cashToAdd = restante - Number(changeAmount);
+                console.log('Actualizando cash en UpdateTicket:', { userId, cashToAdd, oldStatus, newStatus });
+                
+                const cashResult = await userService.updateCash(userId, cashToAdd);
+                if (cashResult.success === true) {
+                    return {
+                        success: true,
+                        ticketId: ticketId,
+                        data: dataToUpdate,
+                        cashUpdated: cashResult
+                    };
+                } else {
+                    return {
+                        success: false,
+                        message: "Error en la actualizacion del usuario"
+                    };
+                }
+            }
+            
             return {
                 success: true,
                 ticketId: ticketId,
