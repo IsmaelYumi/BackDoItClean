@@ -257,7 +257,6 @@ export class Ticket{
             }
             const dataToUpdate = {
                 ...updateData,
-                updatedAt: new Date()
             };
             await ticketRef.update(dataToUpdate);
             return {

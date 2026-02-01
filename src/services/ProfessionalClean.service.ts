@@ -21,8 +21,27 @@ export class professionalCleans {
             return 1;
         }
     }
+
+    // Obtener el siguiente código autoincrementable
+    private async getNextCode(): Promise<number> {
+        try {
+            const snapshot = await this.collection.get();
+            if (snapshot.empty) {
+                return 1; // Si no hay professional cleans, comenzar con código 1
+            }
+            // Obtener el máximo código desde los documentos
+            const maxCode = snapshot.docs.reduce((max, doc) => {
+                const data = doc.data();
+                const code = data.code || 0;
+                return code > max ? code : max;
+            }, 0);
+            return maxCode + 1;
+        } catch (error) {
+            console.error('Error obteniendo siguiente código:', error);
+            return 1;
+        }
+    }
     async createProfessionalClean(
-        code: number,
         name: string,
         price: number,
         description: string,
@@ -31,8 +50,8 @@ export class professionalCleans {
         isVisible: boolean,
         programGroups?: any[]
     ) {
-        if (!name || !price || !code) {
-            return { mensaje: "Nombre, precio y código son requeridos", success: false }
+        if (!name) {
+            return { mensaje: "Nombre es requerido", success: false }
         }
         try {
             // Verificar si ya existe un professional clean con el mismo nombre
@@ -41,8 +60,9 @@ export class professionalCleans {
                 return { mensaje: "Ya existe un professional clean con ese nombre", success: false };
             }
             
-            // Generar el siguiente ID autoincrementable
+            // Generar el siguiente ID y código autoincrementables
             const id = await this.getNextId();
+            const code = await this.getNextCode();
             const professionalClean = {
                 id,
                 code,
@@ -154,26 +174,25 @@ export class professionalCleans {
         }
     }
     async createMultipleProfessionalCleans(professionalCleans: Array<{
-        code: number;
         name: string;
         price: number;
         description: string;
         category: string;
         imageUrl: string;
-        isVisible: number;
+        isVisible: boolean;
         programGroups?: any[];
     }>) {
         const results = {
             success: [] as number[],
-            failed: [] as { code: number | string; reason: string }[]
+            failed: [] as { name: string; reason: string }[]
         };
         for (const professionalCleanData of professionalCleans) {
             try {
                 // Validar campos requeridos
-                if (!professionalCleanData.name || !professionalCleanData.price || !professionalCleanData.code) {
+                if (!professionalCleanData.name || !professionalCleanData.price) {
                     results.failed.push({
-                        code: professionalCleanData.code ?? 'sin código',
-                        reason: 'Nombre, precio y código son requeridos'
+                        name: professionalCleanData.name ?? 'sin nombre',
+                        reason: 'Nombre y precio son requeridos'
                     });
                     continue;
                 }
@@ -182,17 +201,18 @@ export class professionalCleans {
                 const existingSnapshot = await this.collection.where('name', '==', professionalCleanData.name).get();
                 if (!existingSnapshot.empty) {
                     results.failed.push({
-                        code: professionalCleanData.code,
+                        name: professionalCleanData.name,
                         reason: 'Ya existe un professional clean con ese nombre'
                     });
                     continue;
                 }
                 
-                // Generar el siguiente ID autoincrementable
+                // Generar el siguiente ID y código autoincrementables
                 const id = await this.getNextId();
+                const code = await this.getNextCode();
                 const professionalClean = {
                     id,
-                    code: professionalCleanData.code,
+                    code,
                     name: professionalCleanData.name,
                     price: professionalCleanData.price,
                     description: professionalCleanData.description || '',
@@ -208,7 +228,7 @@ export class professionalCleans {
                 results.success.push(id);
             } catch (error) {
                 results.failed.push({
-                    code: professionalCleanData.code,
+                    name: professionalCleanData.name,
                     reason: 'Error al crear el professional clean'
                 });
             }
@@ -218,7 +238,7 @@ export class professionalCleans {
             success: results.failed.length === 0,
             createdCount: results.success.length,
             failedCount: results.failed.length,
-            createdCodes: results.success,
+            createdIds: results.success,
             failures: results.failed
         };
     }
