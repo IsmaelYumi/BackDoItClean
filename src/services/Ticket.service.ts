@@ -276,14 +276,12 @@ export class Ticket{
                 ...updateData,
             };
             await ticketRef.update(dataToUpdate);
-            
             // Si el status cambió y el nuevo status NO es "open", actualizar el cash del usuario
-            if (updateData.status && oldStatus !== newStatus && newStatus !== StatusTicket.OPEN) {
+            if (updateData.status  && newStatus !== StatusTicket.OPEN) {
                 const price = updateData.price !== undefined ? updateData.price : currentData?.price;
                 const paidAmount = updateData.paidAmount !== undefined ? updateData.paidAmount : currentData?.paidAmount || 0;
                 const changeAmount = updateData.changeAmount !== undefined ? updateData.changeAmount : currentData?.changeAmount || 0;
                 const userId = currentData?.userId;
-                
                 const restante = Number(paidAmount) - Number(price);
                 const cashToAdd = restante - Number(changeAmount);
                 console.log('Actualizando cash en UpdateTicket:', { userId, cashToAdd, oldStatus, newStatus });

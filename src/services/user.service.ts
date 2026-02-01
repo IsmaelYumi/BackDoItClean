@@ -31,7 +31,7 @@ export class UserService {
     }
   }
   // Crear usuario
-  async createUser(name: string, lastName:string, email:string, phone:string, idCard:string, role:UserRole, password?:string, rating?:number, profileURL?:string) {
+  async createUser(name: string, lastName:string, email:string, phone:string, idCard:string, role:UserRole, password?:string, rating?:number, profileURL?:string, credit?:number, address?:string) {
     try {
       // Si el rol es CLIENT o no se proporciona password, usar un valor por defecto
       let validPassword = password || "null";
@@ -56,6 +56,8 @@ export class UserService {
         role,
         rating: rating || 0,
         profileImageUrl: profileURL || '',
+        credit: credit || 0,
+        address: address || '',
         createdAt: new Date(),
         updatedAt: new Date()
       });
@@ -92,8 +94,7 @@ export class UserService {
   async updateUser(userId: number, userData: any) {
     try {
       // Campos permitidos para actualizar
-      const allowedFields = ['name', 'lastName', 'email', 'password', 'phone', 'idCard', 'role', 'rating', 'profileImageUrl'];
-      
+      const allowedFields = ['name', 'lastName', 'email', 'password', 'phone', 'idCard', 'role', 'rating', 'profileImageUrl', 'credit','address'];
       // Filtrar solo los campos permitidos que vienen en userData
       const updateData: any = { updatedAt: new Date() };
       

@@ -4,8 +4,8 @@ const userService = new UserService();
 // Crear usuario
 export const createUser = async (req: Request, res: Response) => {
   try {
-    const { name, lastName, email, password, phone, idCard, role, rating, profileImageUrl } = req.body;
-    const result = await userService.createUser(name, lastName, email, phone, idCard, role, password, rating, profileImageUrl);
+    const { name, lastName, email, password, phone, idCard, role, rating, profileImageUrl, credit, address } = req.body;
+    const result = await userService.createUser(name, lastName, email, phone, idCard, role, password, rating, profileImageUrl, credit, address);
     const status = result.success ? 201 : 400;
     res.status(status).json(result);
   } catch (error) {
