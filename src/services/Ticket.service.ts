@@ -63,22 +63,33 @@ export class Ticket{
             };
             // Crear el ticket
             await ticketRef.set(ticketData);
-            const restante=Number(paidAmount)-Number(price)
-            const cashToAdd = restante - Number(changeAmount);
-            // Actualizar el cash del usuario (convertir a number)
-            const cashResult = await userService.updateCash(user, cashToAdd);
-            if(cashResult.success==true){
-                 return {
+            
+            // Solo actualizar el cash del usuario si el estado no es "open"
+            if (status !== StatusTicket.OPEN) {
+                const restante = Number(paidAmount) - Number(price);
+                const cashToAdd = restante - Number(changeAmount);
+                // Actualizar el cash del usuario (convertir a number)
+                const cashResult = await userService.updateCash(user, cashToAdd);
+                if (cashResult.success === true) {
+                    return {
+                        success: true,
+                        ticketId: nextId,
+                        cashUpdated: cashResult
+                    };
+                } else {
+                    return {
+                        success: false,
+                        message: "Error en la actualizacion del usuario"
+                    };
+                }
+            }
+            
+            // Si el estado es "open", solo devolver el ticket sin actualizar el usuario
+            return {
                 success: true,
                 ticketId: nextId,
-                cashUpdated: cashResult
-            }
-   
-            }else{
-                return {
-                success: false,
-                message: "Eoor en al actualizacion del usuario"
-            }}
+                cashUpdated: null
+            };
         } catch (error) {
             console.error("Error creating ticket:", error);
             return {
