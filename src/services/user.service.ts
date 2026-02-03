@@ -30,7 +30,7 @@ export class UserService {
       return 1;
     }
   }
-  // Crear usuario
+  // Crear usuarios
   async createUser(name: string, lastName:string, email:string, phone:string, idCard:string, role:UserRole, password?:string, rating?:number, profileURL?:string, credit?:number, address?:string) {
     try {
       // Si el rol es CLIENT o no se proporciona password, usar un valor por defecto
@@ -184,6 +184,28 @@ export class UserService {
       };
     }catch(error ){
       console.error('Error actualizando cash:', error);
+      throw error;
+    }
+  }
+  
+  // Obtener crédito de un usuario
+  async getUserCredit(userId: number) {
+    try {
+      const doc = await this.collection.doc(userId.toString()).get();
+      
+      if (!doc.exists) {
+        return { success: false, message: 'Usuario no encontrado', credit: 0 };
+      }
+      
+      const userData = doc.data();
+      const credit = userData?.credit !== undefined ? userData.credit : 0;
+      return { 
+        success: true,
+        userId,
+        credit 
+      };
+    } catch (error) {
+      console.error('Error obteniendo crédito del usuario:', error);
       throw error;
     }
   }

@@ -1,3 +1,4 @@
+import { userInfo } from 'node:os';
 import {db} from '../config/dbconfig.config';
 import { getAllTickets } from '../controllers/Ticket.controller';
 import { UserService } from "../services/user.service";
@@ -59,17 +60,26 @@ export class Ticket{
                 operatorId:operatorId,
                 paidAmount: paidAmount || 0,
                 changeAmount: changeAmount || 0,
+                valueToPay:0,
                 type: type
             };
             // Crear el ticket
-            await ticketRef.set(ticketData);
             // Solo actualizar el cash del usuario si el estado NO es "open"
             if (status !== StatusTicket.OPEN) {
                 const restante = Number(paidAmount) - Number(price);
+                const creditUserResult = await userService.getUserCredit(Number(user));
+                const creditUser = creditUserResult.credit || 0;
                 const cashToAdd = restante - Number(changeAmount);
                 console.log('Actualizando cash del usuario:', { user, cashToAdd, restante, changeAmount });
-                // Actualizar el cash del usuario (convertir a number) - permite valores negativos
+                if((creditUser+paidAmount)<price){
+                    ticketData.status=StatusTicket.TOPAY
+                    ticketData.valueToPay=(price-paidAmount)
+                }
+
+                await ticketRef.set(ticketData);
                 const cashResult = await userService.updateCash(user, cashToAdd);
+
+
                 if (cashResult.success === true) {
                     return {
                         success: true,
@@ -285,7 +295,6 @@ export class Ticket{
                 const restante = Number(paidAmount) - Number(price);
                 const cashToAdd = restante - Number(changeAmount);
                 console.log('Actualizando cash en UpdateTicket:', { userId, cashToAdd, oldStatus, newStatus });
-                
                 const cashResult = await userService.updateCash(userId, cashToAdd);
                 if (cashResult.success === true) {
                     return {
