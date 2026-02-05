@@ -75,10 +75,7 @@ export class Ticket{
                     ticketData.status=StatusTicket.TOPAY
                     ticketData.valueToPay=(price-paidAmount)
                 }
-
-                await ticketRef.set(ticketData);
                 const cashResult = await userService.updateCash(user, cashToAdd);
-
 
                 if (cashResult.success === true) {
                     return {
@@ -93,6 +90,7 @@ export class Ticket{
                     };
                 }
             }
+            await ticketRef.set(ticketData);
             
             // Si el estado es "open", retornar éxito sin actualizar el cash
             return {
