@@ -288,7 +288,7 @@ export class Ticket{
             // Si el status cambió y el nuevo status NO es "open", actualizar el cash del usuario
             if (updateData.status  && newStatus !== StatusTicket.OPEN) {
                 const price = currentData?.price;
-                const paidAmount = currentData?.paidAmount || 0;
+                const paidAmount = updateData.paidAmount || 0;
                 const userId = currentData?.userId;
                 const cashToAdd = paidAmount
                 console.log('Actualizando cash en UpdateTicket:', { userId, cashToAdd, oldStatus, newStatus });
