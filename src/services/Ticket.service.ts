@@ -1,3 +1,4 @@
+import { userInfo } from 'node:os';
 import {db} from '../config/dbconfig.config';
 import { getAllTickets } from '../controllers/Ticket.controller';
 import { UserService } from "../services/user.service";
@@ -59,21 +60,28 @@ export class Ticket{
                 operatorId:operatorId,
                 paidAmount: paidAmount || 0,
                 changeAmount: changeAmount || 0,
+                valueToPay:0,
                 type: type
             };
             // Crear el ticket
-            await ticketRef.set(ticketData);
             // Solo actualizar el cash del usuario si el estado NO es "open"
             if (status !== StatusTicket.OPEN) {
                 const restante = Number(paidAmount) - Number(price);
+                const creditUserResult = await userService.getUserCredit(Number(user));
+                const creditUser = creditUserResult.credit || 0;
                 const cashToAdd = restante - Number(changeAmount);
                 console.log('Actualizando cash del usuario:', { user, cashToAdd, restante, changeAmount });
-                // Actualizar el cash del usuario (convertir a number) - permite valores negativos
+                if((creditUser+paidAmount)<price){
+                    ticketData.status=StatusTicket.TOPAY
+                    ticketData.valueToPay=(price-paidAmount)
+                    await ticketRef.set(ticketData);
+                }
                 const cashResult = await userService.updateCash(user, cashToAdd);
                 if (cashResult.success === true) {
                     return {
                         success: true,
-                        ticketId: nextId,
+                        ticketId: nextId
+                        ,
                         cashUpdated: cashResult
                     };
                 } else {
@@ -83,6 +91,7 @@ export class Ticket{
                     };
                 }
             }
+            await ticketRef.set(ticketData);
             
             // Si el estado es "open", retornar éxito sin actualizar el cash
             return {
@@ -270,22 +279,23 @@ export class Ticket{
             const currentData = doc.data();
             const oldStatus = currentData?.status;
             const newStatus = updateData.status || oldStatus;
+            // Calcular el paidAmount acumulado si se envía un nuevo pago
+            const paidAmount = updateData.paidAmount !== undefined 
+                ? (currentData?.paidAmount || 0) + updateData.paidAmount
+                : currentData?.paidAmount || 0;
             
             // Actualizar el ticket
             const dataToUpdate = {
                 ...updateData,
+                paidAmount: paidAmount
             };
             await ticketRef.update(dataToUpdate);
             // Si el status cambió y el nuevo status NO es "open", actualizar el cash del usuario
             if (updateData.status  && newStatus !== StatusTicket.OPEN) {
-                const price = updateData.price !== undefined ? updateData.price : currentData?.price;
-                const paidAmount = updateData.paidAmount !== undefined ? updateData.paidAmount : currentData?.paidAmount || 0;
-                const changeAmount = updateData.changeAmount !== undefined ? updateData.changeAmount : currentData?.changeAmount || 0;
+                const price = currentData?.price;
                 const userId = currentData?.userId;
-                const restante = Number(paidAmount) - Number(price);
-                const cashToAdd = restante - Number(changeAmount);
+                const cashToAdd = updateData.paidAmount || 0;
                 console.log('Actualizando cash en UpdateTicket:', { userId, cashToAdd, oldStatus, newStatus });
-                
                 const cashResult = await userService.updateCash(userId, cashToAdd);
                 if (cashResult.success === true) {
                     return {
