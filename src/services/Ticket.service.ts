@@ -74,9 +74,9 @@ export class Ticket{
                 if((creditUser+paidAmount)<price){
                     ticketData.status=StatusTicket.TOPAY
                     ticketData.valueToPay=(price-paidAmount)
+                    await ticketRef.set(ticketData);
                 }
                 const cashResult = await userService.updateCash(user, cashToAdd);
-
                 if (cashResult.success === true) {
                     return {
                         success: true,
