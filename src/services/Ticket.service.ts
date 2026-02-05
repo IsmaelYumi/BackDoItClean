@@ -279,18 +279,22 @@ export class Ticket{
             const currentData = doc.data();
             const oldStatus = currentData?.status;
             const newStatus = updateData.status || oldStatus;
+            // Calcular el paidAmount acumulado si se envía un nuevo pago
+            const paidAmount = updateData.paidAmount !== undefined 
+                ? (currentData?.paidAmount || 0) + updateData.paidAmount
+                : currentData?.paidAmount || 0;
             
             // Actualizar el ticket
             const dataToUpdate = {
                 ...updateData,
+                paidAmount: paidAmount
             };
             await ticketRef.update(dataToUpdate);
             // Si el status cambió y el nuevo status NO es "open", actualizar el cash del usuario
             if (updateData.status  && newStatus !== StatusTicket.OPEN) {
                 const price = currentData?.price;
-                const paidAmount = updateData.paidAmount || 0;
                 const userId = currentData?.userId;
-                const cashToAdd = paidAmount
+                const cashToAdd = updateData.paidAmount || 0;
                 console.log('Actualizando cash en UpdateTicket:', { userId, cashToAdd, oldStatus, newStatus });
                 const cashResult = await userService.updateCash(userId, cashToAdd);
                 if (cashResult.success === true) {
