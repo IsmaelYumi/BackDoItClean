@@ -63,42 +63,50 @@ export class Ticket{
                 valueToPay:0,
                 type: type
             };
-            // Crear el ticket
-            // Solo actualizar el cash del usuario si el estado NO es "open"
-            if (status !== StatusTicket.OPEN) {
-                const restante = Number(paidAmount) - Number(price);
-                const creditUserResult = await userService.getUserCredit(Number(user));
-                const creditUser = creditUserResult.credit || 0;
-                const cashToAdd = restante - Number(changeAmount);
-                console.log('Actualizando cash del usuario:', { user, cashToAdd, restante, changeAmount });
-                if((creditUser+paidAmount)<price){
-                    ticketData.status=StatusTicket.TOPAY
-                    ticketData.valueToPay=(price-paidAmount)
-                    await ticketRef.set(ticketData);
-                }
-                const cashResult = await userService.updateCash(user, cashToAdd);
-                if (cashResult.success === true) {
-                    return {
-                        success: true,
-                        ticketId: nextId
-                        ,
-                        cashUpdated: cashResult
-                    };
-                } else {
-                    return {
-                        success: false,
-                        message: "Error en la actualizacion del usuario"
-                    };
-                }
+            
+            // Si el estado es "open", guardar sin actualizar cash
+            if (status === StatusTicket.OPEN) {
+                await ticketRef.set(ticketData);
+                return {
+                    success: true,
+                    ticketId: nextId,
+                    cashUpdated: null
+                };
             }
+
+            // Estado diferente a "open": validar y actualizar cash ANTES de guardar
+            const restante = Number(paidAmount) - Number(price);
+            const creditUserResult = await userService.getUserCredit(Number(user));
+            const creditUser = creditUserResult.credit || 0;
+            const cashToAdd = restante - Number(changeAmount);
+            
+            console.log('Actualizando cash del usuario:', { user, cashToAdd, restante, changeAmount });
+            
+            // Verificar si hay crédito insuficiente
+            if((creditUser + paidAmount) < price){
+                ticketData.status = StatusTicket.TOPAY;
+                ticketData.valueToPay = (price - paidAmount);
+            }
+            
+            // Actualizar cash ANTES de guardar el ticket
+            const cashResult = await userService.updateCash(user, cashToAdd);
+            
+            if (cashResult.success !== true) {
+                return {
+                    success: false,
+                    message: "Error en la actualizacion del usuario"
+                };
+            }
+            
+            // Solo guardar ticket si el cash se actualizó correctamente
             await ticketRef.set(ticketData);
             
-            // Si el estado es "open", retornar éxito sin actualizar el cash
             return {
                 success: true,
                 ticketId: nextId,
-                cashUpdated: null
+                cashUpdated: cashResult
             };
+            
         } catch (error) {
             console.error("Error creating ticket:", error);
             return {
