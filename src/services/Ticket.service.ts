@@ -123,6 +123,7 @@ export class Ticket{
             return {
                 success: true,
                 data: tickets
+                
             };
         } catch (error) {
             console.error("Error getting tickets:", error);
