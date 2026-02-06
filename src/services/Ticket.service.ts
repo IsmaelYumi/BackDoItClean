@@ -413,11 +413,11 @@ export class Ticket {
       //     }
       //   }
 
-      //   return {
-      //     success: true,
-      //     ticketId: ticketId,
-      //     data: dataToUpdate,
-      //   };
+      return {
+        success: true,
+        ticketId: ticketId,
+        data: dataToUpdate,
+      };
     } catch (error) {
       console.error("Error updating ticket:", error);
       return {
