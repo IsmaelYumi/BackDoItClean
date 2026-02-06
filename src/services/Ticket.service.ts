@@ -104,21 +104,32 @@ export class Ticket {
           ticketData.status = StatusTicket.TOPAY;
           ticketData.valueToPay = price - paidAmount;
         }
-        const cashResult = await userService.updateCash(user, cashToAdd);
-
-        await ticketRef.set(ticketData);
-
-        if (cashResult.success === true) {
-          return {
-            success: true,
-            ticketId: nextId,
-            cashUpdated: cashResult,
-          };
-        } else {
-          return {
-            success: false,
-            message: "Error en la creación del ticket",
-          };
+    }
+    async GetAllTickets() {
+        try {
+            const snapshot = await this.ticketCollection.get();
+            const tickets = snapshot.docs.map(doc => {
+                const data = doc.data();
+                return {
+                    id: doc.id,
+                    type:data?.type || "professionalClean",
+                    ...data,
+                    createdAt: data.createdAt?.toDate?.() ? data.createdAt.toDate().toISOString() : data.createdAt,
+                    updatedAt: data.updatedAt?.toDate?.() ? data.updatedAt.toDate().toISOString() : data.updatedAt,
+                    printedAt: data.printedAt?.toDate?.() ? data.printedAt.toDate().toISOString() : data.printedAt
+                };
+            });
+            return {
+                success: true,
+                data: tickets
+                
+            };
+        } catch (error) {
+            console.error("Error getting tickets:", error);
+            return {
+                success: false,
+                error: error
+            };
         }
       } else {
         console.error("Error creating ticket:");
