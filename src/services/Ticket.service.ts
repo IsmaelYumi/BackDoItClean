@@ -87,12 +87,45 @@ export class Ticket {
           ticketId: nextId,
           cashUpdated: null,
         };
+      } else if (status === StatusTicket.CLOSE) {
+        // Validar si se paga el monto completo del ticket usando el PaidAmount y el credit
+        const restante = Number(paidAmount) - Number(price);
+        const creditUserResult = await userService.getUserCredit(Number(user));
+        const creditUser = creditUserResult.credit || 0;
+        const cashToAdd = restante - Number(changeAmount);
+        console.log("Actualizando cash del usuario:", {
+          user,
+          cashToAdd,
+          restante,
+          changeAmount,
+        });
+
+        if (creditUser + paidAmount < price) {
+          ticketData.status = StatusTicket.TOPAY;
+          ticketData.valueToPay = price - paidAmount;
+        }
+        const cashResult = await userService.updateCash(user, cashToAdd);
+
+        await ticketRef.set(ticketData);
+
+        if (cashResult.success === true) {
+          return {
+            success: true,
+            ticketId: nextId,
+            cashUpdated: cashResult,
+          };
+        } else {
+          return {
+            success: false,
+            message: "Error en la creación del ticket",
+          };
+        }
       } else {
-        console.error("Test Error creating ticket:");
+        console.error("Error creating ticket:");
         return {
           success: false,
           error:
-            "ERROR TEST TICKET, NO SE PERMITE CREAR TICKETS DIFERENTES A OPEN",
+            "ERROR TICKET, NO SE PERMITE CREAR TICKETS DIFERENTES A OPEN o CLOSE",
         };
       }
 
