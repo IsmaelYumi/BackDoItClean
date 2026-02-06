@@ -533,5 +533,5 @@ export class Ticket {
       };
     }
   }
-  async UpdateProgramOptions() {}
+  async UpdateProgramOptions() { }
 }
