@@ -415,6 +415,7 @@ export class Ticket {
 
           if (cashToAdd >= 0) {
             dataToUpdate.status = StatusTicket.CLOSE;
+            dataToUpdate.paidAmount = Number(paidAmount) + Number(currentData?.paidAmount);
             dataToUpdate.valueToPay = 0;
           }
           await ticketRef.update(dataToUpdate);
