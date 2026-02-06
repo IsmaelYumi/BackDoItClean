@@ -432,9 +432,6 @@ export class Ticket {
           };
         }
 
-
-
-
       }
 
       //   // Si el status cambió y el nuevo status NO es "open", actualizar el cash del usuario
