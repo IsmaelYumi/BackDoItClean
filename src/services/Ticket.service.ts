@@ -402,35 +402,60 @@ export class Ticket {
           newStatus,
         });
 
-
         if (cashToAdd < 0) {
           dataToUpdate.status = StatusTicket.TOPAY;
           dataToUpdate.valueToPay = cashToAdd * -1; // Convertir a positivo para mostrar cuánto falta por pagar
         }
 
         if (oldStatus === StatusTicket.TOPAY && newStatus === StatusTicket.CLOSE) {
-          if (creditUser + paidAmount >= price) {
+
+          // Validar si se paga el monto completo del ticket usando el PaidAmount y el credit
+          const restante = Number(paidAmount) + Number(currentData?.paidAmount) - Number(price);
+          const cashToAdd = restante - Number(changeAmount);
+
+          if (cashToAdd >= 0) {
             dataToUpdate.status = StatusTicket.CLOSE;
             dataToUpdate.valueToPay = 0;
           }
+          await ticketRef.update(dataToUpdate);
+
+          const cashResult = await userService.updateCash(userId, cashToAdd);
+          if (cashResult.success === true) {
+            return {
+              success: true,
+              ticketId: ticketId,
+              data: dataToUpdate,
+              cashUpdated: cashResult,
+            };
+          } else {
+            return {
+              success: false,
+              message: "Error en la actualizacion del usuario",
+            };
+          }
+
+
+        }
+        else {
+          await ticketRef.update(dataToUpdate);
+
+          const cashResult = await userService.updateCash(userId, cashToAdd);
+          if (cashResult.success === true) {
+            return {
+              success: true,
+              ticketId: ticketId,
+              data: dataToUpdate,
+              cashUpdated: cashResult,
+            };
+          } else {
+            return {
+              success: false,
+              message: "Error en la actualizacion del usuario",
+            };
+          }
         }
 
-        await ticketRef.update(dataToUpdate);
 
-        const cashResult = await userService.updateCash(userId, cashToAdd);
-        if (cashResult.success === true) {
-          return {
-            success: true,
-            ticketId: ticketId,
-            data: dataToUpdate,
-            cashUpdated: cashResult,
-          };
-        } else {
-          return {
-            success: false,
-            message: "Error en la actualizacion del usuario",
-          };
-        }
 
       }
 
