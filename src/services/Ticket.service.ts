@@ -125,7 +125,7 @@ export class Ticket {
         return {
           success: false,
           error:
-            "ERROR TICKET, NO SE PERMITE CREAR TICKETS DIFERENTES A OPEN o CLOSE",
+            "ERROR TICKET, NO ES POSIBLE CREAR TICKETS DIFERENTES A OPEN o CLOSE",
         };
       }
 
