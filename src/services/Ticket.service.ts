@@ -374,6 +374,7 @@ export class Ticket {
     }
   }
   async UpdateTicket(ticketId: string, updateData: any) {
+    var logMessage = '';
     try {
       const ticketRef = this.ticketCollection.doc(ticketId);
       const doc = await ticketRef.get();
@@ -439,12 +440,13 @@ export class Ticket {
             if (creditUser + cashToAdd >= 0) {
               dataToUpdate.status = StatusTicket.CLOSE;
               dataToUpdate.creditUsed = cashToAdd * -1; // Convertir a positivo para mostrar cuánto crédito se usó
+              logMessage += ' 1';
             }
             // Si el crédito del usuario más el monto pagado aún no cubre el precio, el ticket queda en estado "toPay" 
             // y se muestra cuánto falta por pagar
             else {
               dataToUpdate.status = StatusTicket.TOPAY;
-
+              logMessage += ' 2';
               // Mostrar cuánto crédito se usó y cuánto falta por pagar después de usar el crédito
               if (creditUser > 0) {
                 dataToUpdate.creditUsed = creditUser; // Mostrar cuánto crédito se usó
@@ -463,53 +465,72 @@ export class Ticket {
           // y el cliente me está pagando ese monto,
           //  entonces se cierra el ticket y se actualiza el cash del usuario con ese monto que se estaba debiendo
 
+          logMessage += ' 3';
           if (paidAmount == currentData?.valueToPay) {
+
+            logMessage += ' 4';
             dataToUpdate.status = StatusTicket.CLOSE;
             dataToUpdate.paidAmount = Number(paidAmount) + Number(currentData?.paidAmount) + Number(creditUsed);
             dataToUpdate.valueToPay = 0;
-
 
             await ticketRef.update(dataToUpdate);
 
           }
           return {
             success: false,
-            message: "Error en la actualizacion del ToPay",
+            message: "Error en la actualizacion del ToPay" + logMessage,
           };
-
 
         }
 
 
+        logMessage += ' 5';
+
         await ticketRef.update(dataToUpdate);
 
+        logMessage += ' 6';
         const cashResult = await userService.updateCash(userId, cashToAdd);
         if (cashResult.success === true) {
+
+          logMessage += ' 7';
           return {
             success: true,
             ticketId: ticketId,
             data: dataToUpdate,
             cashUpdated: cashResult,
+            message:
+              logMessage
           };
         } else {
+
+          logMessage += ' 8';
           return {
             success: false,
-            message: "Error en la actualizacion del usuario",
+            message: "Error en la actualizacion del usuario" + logMessage,
           };
         }
 
       }
 
+      logMessage += ' 9';
       return {
         success: true,
         ticketId: ticketId,
         data: dataToUpdate,
+        message:
+          logMessage
       };
     } catch (error) {
+
+      logMessage += ' 10';
+
+
       console.error("Error updating ticket:", error);
       return {
         success: false,
         error: error,
+        message:
+          logMessage
       };
     }
   }
