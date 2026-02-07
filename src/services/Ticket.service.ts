@@ -471,23 +471,6 @@ export class Ticket {
 
             await ticketRef.update(dataToUpdate);
 
-            const cashResult = await userService.updateCash(userId, paidAmount);
-            if (cashResult.success === true) {
-              return {
-                success: true,
-                ticketId: ticketId,
-                data: dataToUpdate,
-                cashUpdated: cashResult,
-              };
-            } else {
-              return {
-                success: false,
-                message: "Error en la actualizacion del usuario",
-              };
-            }
-
-
-
           }
           return {
             success: false,
@@ -496,23 +479,23 @@ export class Ticket {
 
 
         }
-        else {
-          await ticketRef.update(dataToUpdate);
 
-          const cashResult = await userService.updateCash(userId, cashToAdd);
-          if (cashResult.success === true) {
-            return {
-              success: true,
-              ticketId: ticketId,
-              data: dataToUpdate,
-              cashUpdated: cashResult,
-            };
-          } else {
-            return {
-              success: false,
-              message: "Error en la actualizacion del usuario",
-            };
-          }
+
+        await ticketRef.update(dataToUpdate);
+
+        const cashResult = await userService.updateCash(userId, cashToAdd);
+        if (cashResult.success === true) {
+          return {
+            success: true,
+            ticketId: ticketId,
+            data: dataToUpdate,
+            cashUpdated: cashResult,
+          };
+        } else {
+          return {
+            success: false,
+            message: "Error en la actualizacion del usuario",
+          };
         }
 
       }
