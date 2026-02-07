@@ -419,7 +419,7 @@ export class Ticket {
         const userId = currentData?.userId;
         // Validar si se paga el monto completo del ticket usando el PaidAmount y el credit
         const restante = Number(paidAmount) - Number(price);
-        const cashToAdd = restante - Number(changeAmount);
+        var cashToAdd = restante - Number(changeAmount);
         const creditUserResult = await userService.getUserCredit(Number(userId));
         const creditUser = creditUserResult.credit || 0;
 
@@ -472,6 +472,8 @@ export class Ticket {
             dataToUpdate.status = StatusTicket.CLOSE;
             dataToUpdate.paidAmount = Number(paidAmount) + Number(currentData?.paidAmount) + Number(creditUsed);
             dataToUpdate.valueToPay = 0;
+
+            cashToAdd = paidAmount; // El monto que se estaba debiendo es lo que se va a agregar al cash del usuario, convirtiendo a positivo
 
           }
 
