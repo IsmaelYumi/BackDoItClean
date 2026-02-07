@@ -408,32 +408,39 @@ export class Ticket {
         }
 
         if (oldStatus === StatusTicket.TOPAY && newStatus === StatusTicket.CLOSE) {
+          // Yo debería tener un "ValueToPay" en el ticket, 
+          // y el cliente me está pagando ese monto,
+          //  entonces se cierra el ticket y se actualiza el cash del usuario con ese monto que se estaba debiendo
 
-          // Validar si se paga el monto completo del ticket usando el PaidAmount y el credit
-          const restante = Number(paidAmount) + Number(currentData?.paidAmount) - Number(price);
-          const cashToAdd = restante - Number(changeAmount);
-
-          if (cashToAdd >= 0) {
+          if (paidAmount == currentData?.valueToPay) {
             dataToUpdate.status = StatusTicket.CLOSE;
             dataToUpdate.paidAmount = Number(paidAmount) + Number(currentData?.paidAmount);
             dataToUpdate.valueToPay = 0;
-          }
-          await ticketRef.update(dataToUpdate);
 
-          const cashResult = await userService.updateCash(userId, cashToAdd);
-          if (cashResult.success === true) {
-            return {
-              success: true,
-              ticketId: ticketId,
-              data: dataToUpdate,
-              cashUpdated: cashResult,
-            };
-          } else {
-            return {
-              success: false,
-              message: "Error en la actualizacion del usuario",
-            };
+
+            await ticketRef.update(dataToUpdate);
+
+            const cashResult = await userService.updateCash(userId, paidAmount);
+            if (cashResult.success === true) {
+              return {
+                success: true,
+                ticketId: ticketId,
+                data: dataToUpdate,
+                cashUpdated: cashResult,
+              };
+            } else {
+              return {
+                success: false,
+                message: "Error en la actualizacion del usuario",
+              };
+            }
+
+
           }
+          return {
+            success: false,
+            message: "Error en la actualizacion del ToPay",
+          };
 
 
         }
