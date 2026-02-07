@@ -473,13 +473,7 @@ export class Ticket {
             dataToUpdate.paidAmount = Number(paidAmount) + Number(currentData?.paidAmount) + Number(creditUsed);
             dataToUpdate.valueToPay = 0;
 
-            await ticketRef.update(dataToUpdate);
-
           }
-          return {
-            success: false,
-            message: "Error en la actualizacion del ToPay" + logMessage,
-          };
 
         }
 
