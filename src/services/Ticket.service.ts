@@ -75,6 +75,7 @@ export class Ticket {
         paidAmount: paidAmount || 0,
         changeAmount: changeAmount || 0,
         valueToPay: 0,
+        creditUsed: 0,
         type: type,
       };
 
@@ -100,9 +101,19 @@ export class Ticket {
           changeAmount,
         });
 
+        // Si el cashToAdd es negativo, significa que el cliente no pagó lo suficiente para cubrir el precio del ticket
         if (cashToAdd < 0) {
-          ticketData.status = StatusTicket.TOPAY;
-          ticketData.valueToPay = cashToAdd * -1; // Convertir a positivo para mostrar cuánto falta por pagar
+          // Si el crédito del usuario más el monto pagado cubre el precio, el ticket se cierra normalmente
+          if (creditUser + cashToAdd >= 0) {
+            ticketData.status = StatusTicket.CLOSE;
+            ticketData.creditUsed = cashToAdd * -1; // Convertir a positivo para mostrar cuánto crédito se usó
+          }
+          // Si el crédito del usuario más el monto pagado aún no cubre el precio, el ticket queda en estado "toPay" 
+          // y se muestra cuánto falta por pagar
+          else {
+            ticketData.status = StatusTicket.TOPAY;
+            ticketData.valueToPay = cashToAdd * -1; // Convertir a positivo para mostrar cuánto falta por pagar
+          }
         }
         const cashResult = await userService.updateCash(user, cashToAdd);
 
