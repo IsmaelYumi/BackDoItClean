@@ -112,7 +112,16 @@ export class Ticket {
           // y se muestra cuánto falta por pagar
           else {
             ticketData.status = StatusTicket.TOPAY;
-            ticketData.valueToPay = cashToAdd * -1; // Convertir a positivo para mostrar cuánto falta por pagar
+
+            // Mostrar cuánto crédito se usó y cuánto falta por pagar después de usar el crédito
+            if (creditUser > 0) {
+              ticketData.creditUsed = creditUser; // Mostrar cuánto crédito se usó
+              ticketData.valueToPay = (cashToAdd + creditUser) * -1; // Mostrar cuánto falta por pagar después de usar el crédito
+            }
+            // Si el usuario no tiene crédito, simplemente mostrar cuánto falta por pagar
+            else {
+              ticketData.valueToPay = cashToAdd * -1; // Convertir a positivo para mostrar cuánto falta por pagar
+            }
           }
         }
         const cashResult = await userService.updateCash(user, cashToAdd);
