@@ -408,6 +408,13 @@ export class Ticket {
           updateData.changeAmount !== undefined
             ? updateData.changeAmount
             : currentData?.changeAmount || 0;
+
+        const creditUsed =
+          updateData.creditUsed !== undefined
+            ? updateData.creditUsed
+            : currentData?.creditUsed || 0;
+
+
         const userId = currentData?.userId;
         // Validar si se paga el monto completo del ticket usando el PaidAmount y el credit
         const restante = Number(paidAmount) - Number(price);
@@ -422,19 +429,43 @@ export class Ticket {
           newStatus,
         });
 
-        if (cashToAdd < 0) {
-          dataToUpdate.status = StatusTicket.TOPAY;
-          dataToUpdate.valueToPay = cashToAdd * -1; // Convertir a positivo para mostrar cuánto falta por pagar
+
+
+        if (oldStatus === StatusTicket.OPEN && newStatus === StatusTicket.CLOSE) {
+
+          // Si el cashToAdd es negativo, significa que el cliente no pagó lo suficiente para cubrir el precio del ticket
+          if (cashToAdd < 0) {
+            // Si el crédito del usuario más el monto pagado cubre el precio, el ticket se cierra normalmente
+            if (creditUser + cashToAdd >= 0) {
+              dataToUpdate.status = StatusTicket.CLOSE;
+              dataToUpdate.creditUsed = cashToAdd * -1; // Convertir a positivo para mostrar cuánto crédito se usó
+            }
+            // Si el crédito del usuario más el monto pagado aún no cubre el precio, el ticket queda en estado "toPay" 
+            // y se muestra cuánto falta por pagar
+            else {
+              dataToUpdate.status = StatusTicket.TOPAY;
+
+              // Mostrar cuánto crédito se usó y cuánto falta por pagar después de usar el crédito
+              if (creditUser > 0) {
+                dataToUpdate.creditUsed = creditUser; // Mostrar cuánto crédito se usó
+                dataToUpdate.valueToPay = (cashToAdd + creditUser) * -1; // Mostrar cuánto falta por pagar después de usar el crédito
+              }
+              // Si el usuario no tiene crédito, simplemente mostrar cuánto falta por pagar
+              else {
+                dataToUpdate.valueToPay = cashToAdd * -1; // Convertir a positivo para mostrar cuánto falta por pagar
+              }
+            }
+          }
         }
 
-        if (oldStatus === StatusTicket.TOPAY && newStatus === StatusTicket.CLOSE) {
+        else if (oldStatus === StatusTicket.TOPAY && newStatus === StatusTicket.CLOSE) {
           // Yo debería tener un "ValueToPay" en el ticket, 
           // y el cliente me está pagando ese monto,
           //  entonces se cierra el ticket y se actualiza el cash del usuario con ese monto que se estaba debiendo
 
           if (paidAmount == currentData?.valueToPay) {
             dataToUpdate.status = StatusTicket.CLOSE;
-            dataToUpdate.paidAmount = Number(paidAmount) + Number(currentData?.paidAmount);
+            dataToUpdate.paidAmount = Number(paidAmount) + Number(currentData?.paidAmount) + Number(creditUsed);
             dataToUpdate.valueToPay = 0;
 
 
@@ -454,6 +485,7 @@ export class Ticket {
                 message: "Error en la actualizacion del usuario",
               };
             }
+
 
 
           }
@@ -483,48 +515,7 @@ export class Ticket {
           }
         }
 
-
-
       }
-
-      //   // Si el status cambió y el nuevo status NO es "open", actualizar el cash del usuario
-      //   if (updateData.status && newStatus !== StatusTicket.OPEN) {
-      //     const price =
-      //       updateData.price !== undefined
-      //         ? updateData.price
-      //         : currentData?.price;
-      //     const paidAmount =
-      //       updateData.paidAmount !== undefined
-      //         ? updateData.paidAmount
-      //         : currentData?.paidAmount || 0;
-      //     const changeAmount =
-      //       updateData.changeAmount !== undefined
-      //         ? updateData.changeAmount
-      //         : currentData?.changeAmount || 0;
-      //     const userId = currentData?.userId;
-      //     const restante = Number(paidAmount) - Number(price);
-      //     const cashToAdd = restante - Number(changeAmount);
-      //     console.log("Actualizando cash en UpdateTicket:", {
-      //       userId,
-      //       cashToAdd,
-      //       oldStatus,
-      //       newStatus,
-      //     });
-      //     const cashResult = await userService.updateCash(userId, cashToAdd);
-      //     if (cashResult.success === true) {
-      //       return {
-      //         success: true,
-      //         ticketId: ticketId,
-      //         data: dataToUpdate,
-      //         cashUpdated: cashResult,
-      //       };
-      //     } else {
-      //       return {
-      //         success: false,
-      //         message: "Error en la actualizacion del usuario",
-      //       };
-      //     }
-      //   }
 
       return {
         success: true,
