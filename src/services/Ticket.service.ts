@@ -460,6 +460,7 @@ export class Ticket {
           const data = {
             id: dataToUpdate.id,
             status: dataToUpdate.status,
+            paidAmount: dataToUpdate.paidAmount,
             createdAt: dataToUpdate.createdAt,
             updatedAt: dataToUpdate.updatedAt,
             valueToPay: dataToUpdate.valueToPay,
@@ -490,6 +491,7 @@ export class Ticket {
       const data = {
         id: dataToUpdate.id,
         status: dataToUpdate.status,
+        paidAmount: dataToUpdate.paidAmount,
         createdAt: dataToUpdate.createdAt,
         updatedAt: dataToUpdate.updatedAt,
         valueToPay: dataToUpdate.valueToPay,
