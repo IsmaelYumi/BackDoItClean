@@ -103,6 +103,11 @@ export class Ticket {
 
         // Si el cashToAdd es negativo, significa que el cliente no pagó lo suficiente para cubrir el precio del ticket
         if (cashToAdd < 0) {
+
+
+
+
+
           // Si el crédito del usuario más el monto pagado cubre el precio, el ticket se cierra normalmente
           if (creditUser + cashToAdd >= 0) {
             ticketData.status = StatusTicket.CLOSE;
@@ -441,7 +446,7 @@ export class Ticket {
 
             logMessage += ' 4';
             dataToUpdate.status = StatusTicket.CLOSE;
-            dataToUpdate.paidAmount = Number(paidAmount) + Number(currentData?.paidAmount) + Number(creditUsed);
+            dataToUpdate.paidAmount = Number(paidAmount) + Number(currentData?.paidAmount);
             dataToUpdate.valueToPay = 0;
             cashToAdd = paidAmount; // El monto que se estaba debiendo es lo que se va a agregar al cash del usuario, convirtiendo a positivo
           }
