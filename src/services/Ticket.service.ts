@@ -132,6 +132,7 @@ export class Ticket {
           return {
             success: true,
             ticketId: nextId,
+            data: ticketData,
             cashUpdated: cashResult,
           };
         } else {
