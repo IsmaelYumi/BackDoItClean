@@ -129,10 +129,21 @@ export class Ticket {
         await ticketRef.set(ticketData);
 
         if (cashResult.success === true) {
+
+          const data = {
+            id: ticketData.id,
+            status: ticketData.status,
+            createdAt: ticketData.createdAt,
+            updatedAt: ticketData.updatedAt,
+            valueToPay: ticketData.valueToPay,
+            creditUsed: ticketData.creditUsed,
+            type: ticketData.type,
+          };
+
+
           return {
             success: true,
-            ticketId: nextId,
-            data: ticketData,
+            data: data,
             cashUpdated: cashResult,
           };
         } else {
@@ -378,7 +389,6 @@ export class Ticket {
             ? updateData.creditUsed
             : currentData?.creditUsed || 0;
 
-
         const userId = currentData?.userId;
         // Validar si se paga el monto completo del ticket usando el PaidAmount y el credit
         const restante = Number(paidAmount) - Number(price);
@@ -392,8 +402,6 @@ export class Ticket {
           oldStatus,
           newStatus,
         });
-
-
 
         if (oldStatus === StatusTicket.OPEN && newStatus === StatusTicket.CLOSE) {
 
@@ -435,13 +443,9 @@ export class Ticket {
             dataToUpdate.status = StatusTicket.CLOSE;
             dataToUpdate.paidAmount = Number(paidAmount) + Number(currentData?.paidAmount) + Number(creditUsed);
             dataToUpdate.valueToPay = 0;
-
             cashToAdd = paidAmount; // El monto que se estaba debiendo es lo que se va a agregar al cash del usuario, convirtiendo a positivo
-
           }
-
         }
-
 
         logMessage += ' 5';
 
@@ -452,10 +456,20 @@ export class Ticket {
         if (cashResult.success === true) {
 
           logMessage += ' 7';
+
+          const data = {
+            id: dataToUpdate.id,
+            status: dataToUpdate.status,
+            createdAt: dataToUpdate.createdAt,
+            updatedAt: dataToUpdate.updatedAt,
+            valueToPay: dataToUpdate.valueToPay,
+            creditUsed: dataToUpdate.creditUsed,
+            type: dataToUpdate.type,
+          };
+
           return {
             success: true,
-            ticketId: ticketId,
-            data: dataToUpdate,
+            data: data,
             cashUpdated: cashResult,
             message:
               logMessage
@@ -472,10 +486,20 @@ export class Ticket {
       }
 
       logMessage += ' 9';
+
+      const data = {
+        id: dataToUpdate.id,
+        status: dataToUpdate.status,
+        createdAt: dataToUpdate.createdAt,
+        updatedAt: dataToUpdate.updatedAt,
+        valueToPay: dataToUpdate.valueToPay,
+        creditUsed: dataToUpdate.creditUsed,
+        type: dataToUpdate.type,
+      };
+
       return {
         success: true,
-        ticketId: ticketId,
-        data: dataToUpdate,
+        data: data,
         message:
           logMessage
       };
