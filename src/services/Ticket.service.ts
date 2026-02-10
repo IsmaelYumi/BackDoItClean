@@ -1,6 +1,4 @@
-import { userInfo } from "node:os";
 import { db } from "../config/dbconfig.config";
-import { getAllTickets } from "../controllers/Ticket.controller";
 import { UserService } from "../services/user.service";
 import admin from "firebase-admin";
 const userService = new UserService();
@@ -38,10 +36,69 @@ export class Ticket {
 
       return result;
     } catch (error) {
-      console.error("Error getting next ID:", error);
       throw error;
     }
   }
+
+  private async calculatePaymentStatus(
+    price: number,
+    paidAmount: number,
+    changeAmount: number,
+    userId: string
+  ): Promise<{
+    status: StatusTicket;
+    cashToAdd: number;
+    creditUsed: number;
+    valueToPay: number;
+  }> {
+    const restante = Number(paidAmount) - Number(price);
+    const cashToAdd = restante - Number(changeAmount);
+    const creditUserResult = await userService.getUserCredit(Number(userId));
+    const creditUser = creditUserResult.credit || 0;
+
+    let status = StatusTicket.CLOSE;
+    let creditUsed = 0;
+    let valueToPay = 0;
+
+    // Si el cashToAdd es negativo, significa que el cliente no pagó lo suficiente para cubrir el precio del ticket
+    if (cashToAdd < 0) {
+      // Si el crédito del usuario más el monto pagado cubre el precio, el ticket se cierra normalmente
+      if (creditUser + cashToAdd >= 0) {
+        status = StatusTicket.CLOSE;
+        creditUsed = cashToAdd * -1; // Convertir a positivo para mostrar cuánto crédito se usó
+      }
+      // Si el crédito del usuario más el monto pagado aún no cubre el precio, el ticket queda en estado "toPay"
+      // y se muestra cuánto falta por pagar
+      else {
+        status = StatusTicket.TOPAY;
+        // Mostrar cuánto crédito se usó y cuánto falta por pagar después de usar el crédito
+        if (creditUser > 0) {
+          creditUsed = creditUser; // Mostrar cuánto crédito se usó
+          valueToPay = (cashToAdd + creditUser) * -1; // Mostrar cuánto falta por pagar después de usar el crédito
+        }
+        // Si el usuario no tiene crédito, simplemente mostrar cuánto falta por pagar
+        else {
+          valueToPay = cashToAdd * -1; // Convertir a positivo para mostrar cuánto falta por pagar
+        }
+      }
+    }
+
+    return { status, cashToAdd, creditUsed, valueToPay };
+  }
+
+  private buildTicketResponse(ticketData: any) {
+    return {
+      id: ticketData.id,
+      status: ticketData.status,
+      paidAmount: ticketData.paidAmount,
+      createdAt: ticketData.createdAt,
+      updatedAt: ticketData.updatedAt,
+      valueToPay: ticketData.valueToPay,
+      creditUsed: ticketData.creditUsed,
+      type: ticketData.type,
+    };
+  }
+
   async CreateTicket(
     price: number,
     status: StatusTicket,
@@ -90,65 +147,19 @@ export class Ticket {
         };
       } else if (status === StatusTicket.CLOSE) {
         // Validar si se paga el monto completo del ticket usando el PaidAmount y el credit
-        const restante = Number(paidAmount) - Number(price);
-        const cashToAdd = restante - Number(changeAmount);
-        const creditUserResult = await userService.getUserCredit(Number(user));
-        const creditUser = creditUserResult.credit || 0;
-        console.log("Actualizando cash del usuario:", {
-          user,
-          cashToAdd,
-          restante,
-          changeAmount,
-        });
+        const paymentResult = await this.calculatePaymentStatus(price, paidAmount, changeAmount, user);
+        ticketData.status = paymentResult.status;
+        ticketData.creditUsed = paymentResult.creditUsed;
+        ticketData.valueToPay = paymentResult.valueToPay;
 
-        // Si el cashToAdd es negativo, significa que el cliente no pagó lo suficiente para cubrir el precio del ticket
-        if (cashToAdd < 0) {
-
-
-
-
-
-          // Si el crédito del usuario más el monto pagado cubre el precio, el ticket se cierra normalmente
-          if (creditUser + cashToAdd >= 0) {
-            ticketData.status = StatusTicket.CLOSE;
-            ticketData.creditUsed = cashToAdd * -1; // Convertir a positivo para mostrar cuánto crédito se usó
-          }
-          // Si el crédito del usuario más el monto pagado aún no cubre el precio, el ticket queda en estado "toPay" 
-          // y se muestra cuánto falta por pagar
-          else {
-            ticketData.status = StatusTicket.TOPAY;
-
-            // Mostrar cuánto crédito se usó y cuánto falta por pagar después de usar el crédito
-            if (creditUser > 0) {
-              ticketData.creditUsed = creditUser; // Mostrar cuánto crédito se usó
-              ticketData.valueToPay = (cashToAdd + creditUser) * -1; // Mostrar cuánto falta por pagar después de usar el crédito
-            }
-            // Si el usuario no tiene crédito, simplemente mostrar cuánto falta por pagar
-            else {
-              ticketData.valueToPay = cashToAdd * -1; // Convertir a positivo para mostrar cuánto falta por pagar
-            }
-          }
-        }
-        const cashResult = await userService.updateCash(user, cashToAdd);
+        const cashResult = await userService.updateCash(user, paymentResult.cashToAdd);
 
         await ticketRef.set(ticketData);
 
         if (cashResult.success === true) {
-
-          const data = {
-            id: ticketData.id,
-            status: ticketData.status,
-            createdAt: ticketData.createdAt,
-            updatedAt: ticketData.updatedAt,
-            valueToPay: ticketData.valueToPay,
-            creditUsed: ticketData.creditUsed,
-            type: ticketData.type,
-          };
-
-
           return {
             success: true,
-            data: data,
+            data: this.buildTicketResponse(ticketData),
             cashUpdated: cashResult,
           };
         } else {
@@ -158,7 +169,6 @@ export class Ticket {
           };
         }
       } else {
-        console.error("Error creating ticket:");
         return {
           success: false,
           error:
@@ -169,7 +179,6 @@ export class Ticket {
 
 
     } catch (error) {
-      console.error("Error creating ticket:", error);
       return {
         success: false,
         error: error,
@@ -201,7 +210,6 @@ export class Ticket {
         data: tickets,
       };
     } catch (error) {
-      console.error("Error getting tickets:", error);
       return {
         success: false,
         error: error,
@@ -227,7 +235,6 @@ export class Ticket {
         },
       };
     } catch (error) {
-      console.error("Error getting ticket:", error);
       return {
         success: false,
         error: error,
@@ -248,7 +255,6 @@ export class Ticket {
         data: tickets,
       };
     } catch (error) {
-      console.error("Error getting tickets by user:", error);
       return {
         success: false,
         error: error,
@@ -269,21 +275,15 @@ export class Ticket {
       const dateStart = `${year}-${month}-${day}T00:00:00`;
       const dateEnd = `${year}-${month}-${day}T23:59:59`;
 
-      console.log("Fecha recibida:", date);
-      console.log("dateStart:", dateStart);
-      console.log("dateEnd:", dateEnd);
-
       let query = this.ticketCollection
         .where("createdAt", ">=", dateStart)
         .where("createdAt", "<=", dateEnd);
 
       if (operatorId) {
         query = query.where("operatorId", "==", operatorId);
-        console.log("Filtrando por operatorId:", operatorId);
       }
 
       const snapshot = await query.get();
-      console.log("Documentos encontrados:", snapshot.size);
       if (snapshot.empty) {
         return {
           success: true,
@@ -345,7 +345,6 @@ export class Ticket {
         count: ticketsConUsuario.length,
       };
     } catch (error) {
-      console.error("Error getting tickets by date:", error);
       return {
         success: false,
         error: error,
@@ -353,7 +352,6 @@ export class Ticket {
     }
   }
   async UpdateTicket(ticketId: string, updateData: any) {
-    var logMessage = '';
     try {
       const ticketRef = this.ticketCollection.doc(ticketId);
       const doc = await ticketRef.get();
@@ -395,45 +393,16 @@ export class Ticket {
             : currentData?.creditUsed || 0;
 
         const userId = currentData?.userId;
-        // Validar si se paga el monto completo del ticket usando el PaidAmount y el credit
-        const restante = Number(paidAmount) - Number(price);
-        var cashToAdd = restante - Number(changeAmount);
-        const creditUserResult = await userService.getUserCredit(Number(userId));
-        const creditUser = creditUserResult.credit || 0;
-
-        console.log("Actualizando cash en UpdateTicket:", {
-          userId,
-          cashToAdd,
-          oldStatus,
-          newStatus,
-        });
+        var cashToAdd = 0;
 
         if (oldStatus === StatusTicket.OPEN && newStatus === StatusTicket.CLOSE) {
-
-          // Si el cashToAdd es negativo, significa que el cliente no pagó lo suficiente para cubrir el precio del ticket
-          if (cashToAdd < 0) {
-            // Si el crédito del usuario más el monto pagado cubre el precio, el ticket se cierra normalmente
-            if (creditUser + cashToAdd >= 0) {
-              dataToUpdate.status = StatusTicket.CLOSE;
-              dataToUpdate.creditUsed = cashToAdd * -1; // Convertir a positivo para mostrar cuánto crédito se usó
-              logMessage += ' 1';
-            }
-            // Si el crédito del usuario más el monto pagado aún no cubre el precio, el ticket queda en estado "toPay" 
-            // y se muestra cuánto falta por pagar
-            else {
-              dataToUpdate.status = StatusTicket.TOPAY;
-              logMessage += ' 2';
-              // Mostrar cuánto crédito se usó y cuánto falta por pagar después de usar el crédito
-              if (creditUser > 0) {
-                dataToUpdate.creditUsed = creditUser; // Mostrar cuánto crédito se usó
-                dataToUpdate.valueToPay = (cashToAdd + creditUser) * -1; // Mostrar cuánto falta por pagar después de usar el crédito
-              }
-              // Si el usuario no tiene crédito, simplemente mostrar cuánto falta por pagar
-              else {
-                dataToUpdate.valueToPay = cashToAdd * -1; // Convertir a positivo para mostrar cuánto falta por pagar
-              }
-            }
-          }
+          // Validar si se paga el monto completo del ticket usando el PaidAmount y el credit
+          const paymentResult = await this.calculatePaymentStatus(price, paidAmount, changeAmount, userId);
+          
+          dataToUpdate.status = paymentResult.status;
+          dataToUpdate.creditUsed = paymentResult.creditUsed;
+          dataToUpdate.valueToPay = paymentResult.valueToPay;
+          cashToAdd = paymentResult.cashToAdd;
         }
 
         else if (oldStatus === StatusTicket.TOPAY && newStatus === StatusTicket.CLOSE) {
@@ -441,10 +410,7 @@ export class Ticket {
           // y el cliente me está pagando ese monto,
           //  entonces se cierra el ticket y se actualiza el cash del usuario con ese monto que se estaba debiendo
 
-          logMessage += ' 3';
           if (paidAmount == currentData?.valueToPay) {
-
-            logMessage += ' 4';
             dataToUpdate.status = StatusTicket.CLOSE;
             dataToUpdate.paidAmount = Number(paidAmount) + Number(currentData?.paidAmount);
             dataToUpdate.valueToPay = 0;
@@ -452,75 +418,32 @@ export class Ticket {
           }
         }
 
-        logMessage += ' 5';
-
         await ticketRef.update(dataToUpdate);
 
-        logMessage += ' 6';
         const cashResult = await userService.updateCash(userId, cashToAdd);
         if (cashResult.success === true) {
-
-          logMessage += ' 7';
-
-          const data = {
-            id: dataToUpdate.id,
-            status: dataToUpdate.status,
-            paidAmount: dataToUpdate.paidAmount,
-            createdAt: dataToUpdate.createdAt,
-            updatedAt: dataToUpdate.updatedAt,
-            valueToPay: dataToUpdate.valueToPay,
-            creditUsed: dataToUpdate.creditUsed,
-            type: dataToUpdate.type,
-          };
-
           return {
             success: true,
-            data: data,
+            data: this.buildTicketResponse(dataToUpdate),
             cashUpdated: cashResult,
-            message:
-              logMessage
           };
         } else {
-
-          logMessage += ' 8';
           return {
             success: false,
-            message: "Error en la actualizacion del usuario" + logMessage,
+            message: "Error en la actualizacion del usuario",
           };
         }
 
       }
 
-      logMessage += ' 9';
-
-      const data = {
-        id: dataToUpdate.id,
-        status: dataToUpdate.status,
-        paidAmount: dataToUpdate.paidAmount,
-        createdAt: dataToUpdate.createdAt,
-        updatedAt: dataToUpdate.updatedAt,
-        valueToPay: dataToUpdate.valueToPay,
-        creditUsed: dataToUpdate.creditUsed,
-        type: dataToUpdate.type,
-      };
-
       return {
         success: true,
-        data: data,
-        message:
-          logMessage
+        data: this.buildTicketResponse(dataToUpdate),
       };
     } catch (error) {
-
-      logMessage += ' 10';
-
-
-      console.error("Error updating ticket:", error);
       return {
         success: false,
         error: error,
-        message:
-          logMessage
       };
     }
   }
@@ -544,7 +467,6 @@ export class Ticket {
         status: status,
       };
     } catch (error) {
-      console.error("Error updating ticket status:", error);
       return {
         success: false,
         error: error,
@@ -568,7 +490,6 @@ export class Ticket {
         ticketId: ticketId,
       };
     } catch (error) {
-      console.error("Error deleting ticket:", error);
       return {
         success: false,
         error: error,
@@ -624,7 +545,6 @@ export class Ticket {
         data: ticketsConUsuario,
       };
     } catch (error) {
-      console.error("Error getting tickets with users:", error);
       return {
         success: false,
         error: error,
