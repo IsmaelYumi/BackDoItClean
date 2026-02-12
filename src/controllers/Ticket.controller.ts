@@ -118,3 +118,21 @@ export const getTicketsWithUsers = async (req: Request, res: Response): Promise<
     res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
   }
 };
+export const CierreCaja = async(req: Request, res: Response): Promise<void> => {
+  try {
+    const { operatorId, startDate, endDate } = req.body;
+    
+    if (!operatorId || !startDate || !endDate) {
+      res.status(400).json({ 
+        success: false, 
+        message: 'operatorId, startDate y endDate son requeridos' 
+      });
+      return;
+    }
+    const result = await ticketService.CierreCaja(operatorId, startDate, endDate);
+    const statusCode = result.success ? 200 : 400;
+    res.status(statusCode).json(result);
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
+  }
+}
