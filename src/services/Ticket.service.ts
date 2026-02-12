@@ -1,6 +1,5 @@
 import { db } from "../config/dbconfig.config";
 import { UserService } from "../services/user.service";
-import admin from "firebase-admin";
 const userService = new UserService();
 export enum StatusTicket {
   OPEN = "open",
@@ -551,5 +550,63 @@ export class Ticket {
       };
     }
   }
-  async UpdateProgramOptions() { }
+  async CierreCaja(operatorId: string, startDate: string, endDate: string) {
+    try {
+      if (!operatorId) {
+        return { success: false, message: "Se necesita el operatorId" };
+      }
+      if (!endDate || !startDate) {
+        return { success: false, message: "Se necesita fecha de inicio y de final" };
+      }
+      
+      // Query simple solo por operatorId
+      const snapshot = await this.ticketCollection
+        .where("operatorId", "==", operatorId)
+        .get();
+
+      // Filtrar fechas y status en memoria (sin índices)
+      const tickets = snapshot.docs
+        .map((doc) => doc.data())
+        .filter((ticket: any) => {
+          const ticketDate = ticket.createdAt;
+          return ticketDate >= startDate && 
+                 ticketDate <= endDate && 
+                 ticket.status !== "open";
+        });
+
+      const resumen = tickets.reduce((acc: any, ticket: any) => {
+        // Contar tickets por estado
+        if (!acc.ticketsPorEstado) {
+          acc.ticketsPorEstado = {};
+        }
+        if (!acc.ticketsPorEstado[ticket.status]) {
+          acc.ticketsPorEstado[ticket.status] = 0;
+        }
+        acc.ticketsPorEstado[ticket.status] += 1;
+
+        // Sumar total de ventas
+        if (!acc.totalVentas) {
+          acc.totalVentas = 0;
+        }
+        acc.totalVentas += ticket.paidAmount || 0;
+        return acc;
+      }, {});
+
+      return {
+        success: true,
+        message: "Cierre de caja exitoso",
+        operatorId,
+        fechaInicio: startDate,
+        fechaFin: endDate,
+        totalTickets: tickets.length,
+        ...resumen,
+      };
+    } catch (error) {
+      return {
+        success: false,
+        error: error,
+      };
+    }
+  }
+     
 }

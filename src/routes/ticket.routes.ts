@@ -8,8 +8,9 @@ import {
   updateTicketStatus,
   deleteTicket,
   getTicketsWithUsers,
-  getTicketsByDate
-} from '../controllers/Ticket.controller';
+  getTicketsByDate,
+  CierreCaja
+  } from '../controllers/Ticket.controller';
 
 const router = Router();
 
@@ -23,4 +24,5 @@ router.post("/ticket/with-date",getTicketsByDate);
 router.put('/ticket/:ticketId', updateTicket);
 router.patch('/ticket/:ticketId/status', updateTicketStatus);
 router.delete('/ticket/:ticketId', deleteTicket);
+router.post('/ticket/Cierrecaja', CierreCaja)
 export default router;
