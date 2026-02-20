@@ -608,8 +608,6 @@ export class Ticket {
         success: true,
         message: "Cierre de caja exitoso",
         operatorId,
-        fechaInicio: startDate,
-        fechaFin: endDate,
         totalTickets: tickets.length,
         ticketsPorEstado: resumen.ticketsPorEstado,
         totalVentas: parseFloat(resumen.totalVentas.toFixed(2)),
