@@ -559,13 +559,14 @@ export class Ticket {
       }
       
       // Query simple solo por operatorId
+      let snapshot;
       if(operatorId!="0"){
-      const snapshot = await this.ticketCollection
-        .where("operatorId", "==", operatorId)
-        .get();
+        snapshot = await this.ticketCollection
+          .where("operatorId", "==", operatorId)
+          .get();
       }
       else{
-        const snapshot = await this.ticketCollection.get();
+        snapshot = await this.ticketCollection.get();
       }
       // Filtrar fechas y status en memoria (sin índices)
       const tickets = snapshot.docs
