@@ -20,7 +20,6 @@ export class Ticket {
     try {
       const result = await db.runTransaction(async (transaction) => {
         const counterDoc = await transaction.get(counterRef);
-
         let newId: number;
         if (!counterDoc.exists) {
           newId = 1;
@@ -560,10 +559,14 @@ export class Ticket {
       }
       
       // Query simple solo por operatorId
+      if(operatorId!="0"){
       const snapshot = await this.ticketCollection
         .where("operatorId", "==", operatorId)
         .get();
-
+      }
+      else{
+        const snapshot = await this.ticketCollection.get();
+      }
       // Filtrar fechas y status en memoria (sin índices)
       const tickets = snapshot.docs
         .map((doc) => doc.data())
@@ -573,7 +576,6 @@ export class Ticket {
                  ticketDate <= endDate && 
                  ticket.status !== "open";
         });
-
       const resumen = tickets.reduce((acc: any, ticket: any) => {
         // Contar tickets por estado
         if (!acc.ticketsPorEstado) {
@@ -589,9 +591,19 @@ export class Ticket {
           acc.totalVentas = 0;
         }
         acc.totalVentas += ticket.paidAmount || 0;
+         if(!acc.totalVentasTarjetas){
+          acc.totalVentasTarjetas=0;
+        }
+        let valorTarjeta = ticket.paymentType==PaymentType.TRANSFER?ticket.paidAmount:0
+        acc.totalVentasTarjetas+=valorTarjeta
+          if(!acc.totalVentasCash){
+          acc.totalVentasCash=0;
+        }
+        let valorCash = ticket.paymentType==PaymentType.CASH?ticket.paidAmount:0
+        acc.totalVentasCash+=valorCash
         return acc;
       }, {});
-
+      
       return {
         success: true,
         message: "Cierre de caja exitoso",
@@ -599,7 +611,10 @@ export class Ticket {
         fechaInicio: startDate,
         fechaFin: endDate,
         totalTickets: tickets.length,
-        ...resumen,
+        ticketsPorEstado: resumen.ticketsPorEstado,
+        totalVentas: parseFloat(resumen.totalVentas.toFixed(2)),
+        totalVentasTarjetas: parseFloat(resumen.totalVentasTarjetas.toFixed(2)),
+        totalVentasCash: parseFloat(resumen.totalVentasCash.toFixed(2))
       };
     } catch (error) {
       return {
