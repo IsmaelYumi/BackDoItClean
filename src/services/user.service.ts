@@ -236,7 +236,7 @@ export class UserService {
 
       return { 
         success: true, 
-        data: users,
+        users: users,
         count: users.length
       };
     } catch (error) {
