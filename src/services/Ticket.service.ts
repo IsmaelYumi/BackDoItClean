@@ -586,7 +586,6 @@ export class Ticket {
           acc.ticketsPorEstado[ticket.status] = 0;
         }
         acc.ticketsPorEstado[ticket.status] += 1;
-
         // Sumar total de ventas
         if (!acc.totalVentas) {
           acc.totalVentas = 0;
@@ -615,7 +614,8 @@ export class Ticket {
         ticketsPorEstado: resumen.ticketsPorEstado,
         totalVentas: parseFloat(resumen.totalVentas.toFixed(2)),
         totalVentasTarjetas: parseFloat(resumen.totalVentasTarjetas.toFixed(2)),
-        totalVentasCash: parseFloat(resumen.totalVentasCash.toFixed(2))
+        totalVentasCash: parseFloat(resumen.totalVentasCash.toFixed(2)),
+        tickets:tickets
       };
     } catch (error) {
       return {
