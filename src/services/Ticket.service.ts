@@ -531,6 +531,7 @@ export class Ticket {
           status: ticket.status,
           type: ticket.type,
           operatorId: ticket.operatorId,
+          createdAt:ticket.createdAt,
           userId: ticket.userId,
           name: user?.name || null,
           lastName: user?.lastName || null,
@@ -577,6 +578,23 @@ export class Ticket {
                  ticketDate <= endDate && 
                  ticket.status !== "open";
         });
+        //tickets con la ifnroamcion cargada del usuario y filtrada por operator(Esto esta mal pero asi lo quiere jhonston)
+        const ticketWithUser= await this.GetTicket();
+          if (!ticketWithUser.success || !ticketWithUser.data) {
+        return { success: false, message: "Error al obtener usuarios de tickets" };
+      }
+        const ticketsfiltrados= ticketWithUser.data.filter((ticket: any)=>{
+            if(operatorId != "0"){
+              return ticket.createdAt >= startDate && 
+                   ticket.createdAt <= endDate && 
+                   ticket.operatorId == operatorId &&
+                   ticket.status !== "open";
+            } else {
+              return ticket.createdAt >= startDate && 
+                   ticket.createdAt <= endDate && 
+                   ticket.status !== "open";
+            }
+        })
       const resumen = tickets.reduce((acc: any, ticket: any) => {
         // Contar tickets por estado
         if (!acc.ticketsPorEstado) {
@@ -608,12 +626,12 @@ export class Ticket {
         success: true,
         message: "Cierre de caja exitoso",
         operatorId,
-        totalTickets: tickets.length,
+        totalTickets: ticketsfiltrados.length,
         ticketsPorEstado: resumen.ticketsPorEstado,
         totalVentas: parseFloat(resumen.totalVentas.toFixed(2)),
         totalVentasTarjetas: parseFloat(resumen.totalVentasTarjetas.toFixed(2)),
         totalVentasCash: parseFloat(resumen.totalVentasCash.toFixed(2)),
-        tickets:tickets
+        tickets:ticketsfiltrados
       };
     } catch (error) {
       return {
