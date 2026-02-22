@@ -9,7 +9,10 @@ export enum StatusTicket {
 }
 export enum PaymentType {
   CASH = "cash",
-  TRANSFER = "Transfer",
+  CARD= "card",
+  APPLEPAY="Apple Pay",
+  KAKAOPAY="Kakao Pay"
+
 }
 export class Ticket {
   private ticketCollection = db.collection("Tickets");
@@ -20,7 +23,6 @@ export class Ticket {
     try {
       const result = await db.runTransaction(async (transaction) => {
         const counterDoc = await transaction.get(counterRef);
-
         let newId: number;
         if (!counterDoc.exists) {
           newId = 1;
@@ -412,6 +414,7 @@ export class Ticket {
           if (paidAmount == currentData?.valueToPay) {
             dataToUpdate.status = StatusTicket.CLOSE;
             dataToUpdate.paidAmount = Number(paidAmount) + Number(currentData?.paidAmount);
+            dataToUpdate.recoveredAmount=currentData?.valueToPay
             dataToUpdate.valueToPay = 0;
             cashToAdd = paidAmount; // El monto que se estaba debiendo es lo que se va a agregar al cash del usuario, convirtiendo a positivo
           }
@@ -532,6 +535,8 @@ export class Ticket {
           status: ticket.status,
           type: ticket.type,
           operatorId: ticket.operatorId,
+          createdAt:ticket.createdAt,
+          updatedAt:ticket.updatedAt,
           userId: ticket.userId,
           name: user?.name || null,
           lastName: user?.lastName || null,
@@ -560,20 +565,45 @@ export class Ticket {
       }
       
       // Query simple solo por operatorId
-      const snapshot = await this.ticketCollection
-        .where("operatorId", "==", operatorId)
-        .get();
-
+      let snapshot;
+      if(operatorId!="0"){
+        snapshot = await this.ticketCollection
+          .where("operatorId", "==", operatorId)
+          .get();
+      }
+      else{
+        snapshot = await this.ticketCollection.get();
+      }
       // Filtrar fechas y status en memoria (sin índices)
       const tickets = snapshot.docs
         .map((doc) => doc.data())
         .filter((ticket: any) => {
           const ticketDate = ticket.createdAt;
-          return ticketDate >= startDate && 
-                 ticketDate <= endDate && 
+          return (ticketDate >= startDate && 
+                 ticketDate <= endDate || ticket.updatedAt >= startDate && 
+                   ticket.updatedAt <= endDate)&& 
                  ticket.status !== "open";
         });
+        //tickets con la ifnroamcion cargada del usuario y filtrada por operator(Esto esta mal pero asi lo quiere jhonston)
+        const ticketWithUser= await this.GetTicket();
+          if (!ticketWithUser.success || !ticketWithUser.data) {
+        return { success: false, message: "Error al obtener usuarios de tickets" };
+      }
+        const ticketsfiltrados= ticketWithUser.data.filter((ticket: any)=>{
+            if(operatorId != "0"){
+              return (ticket.createdAt >= startDate && 
+                   ticket.createdAt <= endDate ||
+                   ticket.updatedAt >= startDate && 
+                   ticket.updatedAt <= endDate) &&
+                   ticket.operatorId == operatorId &&
+                   ticket.status !== "open";
+            } else {
+              return ticket.createdAt >= startDate && 
+                   ticket.createdAt <= endDate && 
+                   ticket.status !== "open";
+            }
 
+        })
       const resumen = tickets.reduce((acc: any, ticket: any) => {
         // Contar tickets por estado
         if (!acc.ticketsPorEstado) {
@@ -583,23 +613,54 @@ export class Ticket {
           acc.ticketsPorEstado[ticket.status] = 0;
         }
         acc.ticketsPorEstado[ticket.status] += 1;
-
-        // Sumar total de ventas
-        if (!acc.totalVentas) {
-          acc.totalVentas = 0;
+        
+        // Sumar total de ventas por tarjeta
+        if(!acc.totalVentasTarjetas){
+          acc.totalVentasTarjetas=0
         }
-        acc.totalVentas += ticket.paidAmount || 0;
+        let valorTarjeta = ticket.paymentType==PaymentType.CARD?ticket.paidAmount:0
+        acc.totalVentasTarjetas+=valorTarjeta
+        
+        // Sumar total de ventas cash
+        if(!acc.totalVentasCash){
+          acc.totalVentasCash=0;
+        }
+        if(ticket.recoveredAmount){
+          acc.totalVentasCash += ticket.recoveredAmount || 0;
+        }else{
+          let valorCash = ticket.paymentType==PaymentType.CASH?(ticket.paidAmount-(ticket.changeAmount ||0)):0
+          acc.totalVentasCash+=valorCash
+        }
+        
+        // Sumar total de ventas Apple Pay
+        if(!acc.totalVentasApplePay){
+          acc.totalVentasApplePay=0;
+        }
+        let valorApplePay = ticket.paymentType==PaymentType.APPLEPAY?ticket.paidAmount:0
+        acc.totalVentasApplePay+=valorApplePay
+        
+        // Sumar total de ventas Kakao Pay
+        if(!acc.totalVentasKakaoPay){
+          acc.totalVentasKakaoPay=0;
+        }
+        let valorKakaoPay = ticket.paymentType==PaymentType.KAKAOPAY?ticket.paidAmount:0
+        acc.totalVentasKakaoPay+=valorKakaoPay
+        
         return acc;
       }, {});
-
       return {
         success: true,
         message: "Cierre de caja exitoso",
         operatorId,
-        fechaInicio: startDate,
-        fechaFin: endDate,
-        totalTickets: tickets.length,
-        ...resumen,
+        totalTickets: ticketsfiltrados.length,
+        totalVentas:parseFloat(resumen.totalVentasTarjetas.toFixed(2))+parseFloat(resumen.totalVentasCash.toFixed(2))+parseFloat(resumen.totalVentasApplePay.toFixed(2))+parseFloat(resumen.totalVentasKakaoPay.toFixed(2)),
+        totalbymethod:{
+              totalVentasTarjetas: parseFloat(resumen.totalVentasTarjetas.toFixed(2)),
+              totalVentasCash: parseFloat(resumen.totalVentasCash.toFixed(2)),
+              totalApplePay: parseFloat(resumen.totalVentasApplePay.toFixed(2)),
+              totalKakaoPay: parseFloat(resumen.totalVentasKakaoPay.toFixed(2))
+        },
+        tickets:ticketsfiltrados
       };
     } catch (error) {
       return {
