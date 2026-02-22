@@ -613,12 +613,14 @@ export class Ticket {
           acc.ticketsPorEstado[ticket.status] = 0;
         }
         acc.ticketsPorEstado[ticket.status] += 1;
-        // Sumar total de ventas terjetas
+        
+        // Sumar total de ventas por tarjeta
         if(!acc.totalVentasTarjetas){
           acc.totalVentasTarjetas=0
         }
         let valorTarjeta = ticket.paymentType==PaymentType.CARD?ticket.paidAmount:0
         acc.totalVentasTarjetas+=valorTarjeta
+        
         // Sumar total de ventas cash
         if(!acc.totalVentasCash){
           acc.totalVentasCash=0;
@@ -627,8 +629,23 @@ export class Ticket {
           acc.totalVentasCash += ticket.recoveredAmount || 0;
         }else{
           let valorCash = ticket.paymentType==PaymentType.CASH?(ticket.paidAmount-(ticket.changeAmount ||0)):0
-        acc.totalVentasCash+=valorCash
+          acc.totalVentasCash+=valorCash
         }
+        
+        // Sumar total de ventas Apple Pay
+        if(!acc.totalVentasApplePay){
+          acc.totalVentasApplePay=0;
+        }
+        let valorApplePay = ticket.paymentType==PaymentType.APPLEPAY?ticket.paidAmount:0
+        acc.totalVentasApplePay+=valorApplePay
+        
+        // Sumar total de ventas Kakao Pay
+        if(!acc.totalVentasKakaoPay){
+          acc.totalVentasKakaoPay=0;
+        }
+        let valorKakaoPay = ticket.paymentType==PaymentType.KAKAOPAY?ticket.paidAmount:0
+        acc.totalVentasKakaoPay+=valorKakaoPay
+        
         return acc;
       }, {});
       return {
@@ -636,10 +653,13 @@ export class Ticket {
         message: "Cierre de caja exitoso",
         operatorId,
         totalTickets: ticketsfiltrados.length,
-        ticketsPorEstado: resumen.ticketsPorEstado,
-        totalVentas:parseFloat(resumen.totalVentasTarjetas.toFixed(2))+parseFloat(resumen.totalVentasCash.toFixed(2)),
-        totalVentasTarjetas: parseFloat(resumen.totalVentasTarjetas.toFixed(2)),
-        totalVentasCash: parseFloat(resumen.totalVentasCash.toFixed(2)),
+        totalVentas:parseFloat(resumen.totalVentasTarjetas.toFixed(2))+parseFloat(resumen.totalVentasCash.toFixed(2))+parseFloat(resumen.totalVentasApplePay.toFixed(2))+parseFloat(resumen.totalVentasKakaoPay.toFixed(2)),
+        totalbymethod:{
+              totalVentasTarjetas: parseFloat(resumen.totalVentasTarjetas.toFixed(2)),
+              totalVentasCash: parseFloat(resumen.totalVentasCash.toFixed(2)),
+              totalApplePay: parseFloat(resumen.totalVentasApplePay.toFixed(2)),
+              totalKakaoPay: parseFloat(resumen.totalVentasKakaoPay.toFixed(2))
+        },
         tickets:ticketsfiltrados
       };
     } catch (error) {
