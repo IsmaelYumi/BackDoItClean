@@ -69,7 +69,6 @@ export const getTicketsByDate = async (req: Request, res: Response): Promise<voi
     res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
   }
 };
-
 // Actualizar Ticket
 export const updateTicket = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -82,7 +81,6 @@ export const updateTicket = async (req: Request, res: Response): Promise<void> =
     res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
   }
 };
-
 // Actualizar estado de Ticket
 export const updateTicketStatus = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -95,7 +93,6 @@ export const updateTicketStatus = async (req: Request, res: Response): Promise<v
     res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
   }
 };
-
 // Eliminar Ticket
 export const deleteTicket = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -107,7 +104,6 @@ export const deleteTicket = async (req: Request, res: Response): Promise<void> =
     res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
   }
 };
-
 // Obtener Tickets con información de usuarios
 export const getTicketsWithUsers = async (req: Request, res: Response): Promise<void> => {
   try {

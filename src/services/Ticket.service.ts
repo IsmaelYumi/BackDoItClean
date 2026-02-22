@@ -9,7 +9,10 @@ export enum StatusTicket {
 }
 export enum PaymentType {
   CASH = "cash",
-  TRANSFER = "Transfer",
+  CARD= "card",
+  APPLEPAY="Apple Pay",
+  KAKAOPAY="Kakao Pay"
+
 }
 export class Ticket {
   private ticketCollection = db.collection("Tickets");
@@ -411,6 +414,7 @@ export class Ticket {
           if (paidAmount == currentData?.valueToPay) {
             dataToUpdate.status = StatusTicket.CLOSE;
             dataToUpdate.paidAmount = Number(paidAmount) + Number(currentData?.paidAmount);
+            dataToUpdate.recoveredAmount=currentData?.valueToPay
             dataToUpdate.valueToPay = 0;
             cashToAdd = paidAmount; // El monto que se estaba debiendo es lo que se va a agregar al cash del usuario, convirtiendo a positivo
           }
@@ -532,6 +536,7 @@ export class Ticket {
           type: ticket.type,
           operatorId: ticket.operatorId,
           createdAt:ticket.createdAt,
+          updatedAt:ticket.updatedAt,
           userId: ticket.userId,
           name: user?.name || null,
           lastName: user?.lastName || null,
@@ -574,8 +579,9 @@ export class Ticket {
         .map((doc) => doc.data())
         .filter((ticket: any) => {
           const ticketDate = ticket.createdAt;
-          return ticketDate >= startDate && 
-                 ticketDate <= endDate && 
+          return (ticketDate >= startDate && 
+                 ticketDate <= endDate || ticket.updatedAt >= startDate && 
+                   ticket.updatedAt <= endDate)&& 
                  ticket.status !== "open";
         });
         //tickets con la ifnroamcion cargada del usuario y filtrada por operator(Esto esta mal pero asi lo quiere jhonston)
@@ -585,8 +591,10 @@ export class Ticket {
       }
         const ticketsfiltrados= ticketWithUser.data.filter((ticket: any)=>{
             if(operatorId != "0"){
-              return ticket.createdAt >= startDate && 
-                   ticket.createdAt <= endDate && 
+              return (ticket.createdAt >= startDate && 
+                   ticket.createdAt <= endDate ||
+                   ticket.updatedAt >= startDate && 
+                   ticket.updatedAt <= endDate) &&
                    ticket.operatorId == operatorId &&
                    ticket.status !== "open";
             } else {
@@ -594,6 +602,7 @@ export class Ticket {
                    ticket.createdAt <= endDate && 
                    ticket.status !== "open";
             }
+
         })
       const resumen = tickets.reduce((acc: any, ticket: any) => {
         // Contar tickets por estado
@@ -604,31 +613,31 @@ export class Ticket {
           acc.ticketsPorEstado[ticket.status] = 0;
         }
         acc.ticketsPorEstado[ticket.status] += 1;
-        // Sumar total de ventas
-        if (!acc.totalVentas) {
-          acc.totalVentas = 0;
+        // Sumar total de ventas terjetas
+        if(!acc.totalVentasTarjetas){
+          acc.totalVentasTarjetas=0
         }
-        acc.totalVentas += ticket.paidAmount || 0;
-         if(!acc.totalVentasTarjetas){
-          acc.totalVentasTarjetas=0;
-        }
-        let valorTarjeta = ticket.paymentType==PaymentType.TRANSFER?ticket.paidAmount:0
+        let valorTarjeta = ticket.paymentType==PaymentType.CARD?ticket.paidAmount:0
         acc.totalVentasTarjetas+=valorTarjeta
-          if(!acc.totalVentasCash){
+        // Sumar total de ventas cash
+        if(!acc.totalVentasCash){
           acc.totalVentasCash=0;
         }
-        let valorCash = ticket.paymentType==PaymentType.CASH?ticket.paidAmount:0
+        if(ticket.recoveredAmount){
+          acc.totalVentasCash += ticket.recoveredAmount || 0;
+        }else{
+          let valorCash = ticket.paymentType==PaymentType.CASH?(ticket.paidAmount-(ticket.changeAmount ||0)):0
         acc.totalVentasCash+=valorCash
+        }
         return acc;
       }, {});
-      
       return {
         success: true,
         message: "Cierre de caja exitoso",
         operatorId,
         totalTickets: ticketsfiltrados.length,
         ticketsPorEstado: resumen.ticketsPorEstado,
-        totalVentas: parseFloat(resumen.totalVentas.toFixed(2)),
+        totalVentas:parseFloat(resumen.totalVentasTarjetas.toFixed(2))+parseFloat(resumen.totalVentasCash.toFixed(2)),
         totalVentasTarjetas: parseFloat(resumen.totalVentasTarjetas.toFixed(2)),
         totalVentasCash: parseFloat(resumen.totalVentasCash.toFixed(2)),
         tickets:ticketsfiltrados
