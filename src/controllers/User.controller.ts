@@ -77,3 +77,23 @@ export const loginUser = async (req: Request, res: Response) => {
     res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
   }
 };
+
+// Obtener usuarios por roles
+export const getUsersByRoles = async (req: Request, res: Response) => {
+  try {
+    const { roles } = req.body;
+    
+    if (!roles || !Array.isArray(roles)) {
+      return res.status(400).json({ 
+        success: false, 
+        message: 'Debe proporcionar un array de roles' 
+      });
+    }
+
+    const result = await userService.getUsersByRoles(roles);
+    const status = result.success ? 200 : 400;
+    res.status(status).json(result);
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
+  }
+};

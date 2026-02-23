@@ -209,6 +209,42 @@ export class UserService {
       throw error;
     }
   }
+
+  // Obtener usuarios por roles
+  async getUsersByRoles(roles: number[]) {
+    try {
+      if (!roles || roles.length === 0) {
+        return { success: false, message: 'Debe proporcionar al menos un rol', data: [] };
+      }
+
+      // Firestore permite hasta 10 valores en el operador 'in'
+      if (roles.length > 10) {
+        return { success: false, message: 'No se pueden buscar más de 10 roles a la vez', data: [] };
+      }
+
+      const snapshot = await this.collection.where('role', 'in', roles).get();
+      
+      if (snapshot.empty) {
+        return { success: true, message: 'No se encontraron usuarios con los roles especificados', data: [] };
+      }
+
+      const users = snapshot.docs.map(doc => {
+        const data = doc.data();
+        const { password, ...userWithoutPassword } = data;
+        return { id: doc.id, ...userWithoutPassword };
+      });
+
+      return { 
+        success: true, 
+        users: users,
+        count: users.length
+      };
+    } catch (error) {
+      console.error('Error obteniendo usuarios por roles:', error);
+      return { success: false, message: 'Error al buscar usuarios', error, data: [] };
+    }
+  }
 }
+
 
 export default new UserService();
