@@ -568,7 +568,7 @@ export class Ticket {
         const snapshot = await this.ticketCollection.get();
       }
       // Filtrar fechas y status en memoria (sin índices)
-      const tickets = snapshot.docs
+      const tickets = snapshot.docs 
         .map((doc) => doc.data())
         .filter((ticket: any) => {
           const ticketDate = ticket.createdAt;
