@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { UserService } from "../services/user.service";
+import sessionService from '../services/session.service';
 const userService = new UserService();
 // Crear usuario
 export const createUser = async (req: Request, res: Response) => {
@@ -93,6 +94,63 @@ export const getUsersByRoles = async (req: Request, res: Response) => {
     const result = await userService.getUsersByRoles(roles);
     const status = result.success ? 200 : 400;
     res.status(status).json(result);
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
+  }
+};
+
+// Crear sesión
+export const createSession = async (req: Request, res: Response) => {
+  try {
+    const { operator, startDate, endDate } = req.body;
+    
+    if (!operator || !startDate || !endDate) {
+      return res.status(400).json({ 
+        success: false, 
+        mensaje: 'Operator, startDate y endDate son requeridos' 
+      });
+    }
+
+    const result = await userService.createSession(operator, startDate, endDate);
+    const status = result.success ? 201 : 400;
+    res.status(status).json(result);
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
+  }
+};
+
+// Obtener sesión por ID
+export const getSessionById = async (req: Request, res: Response) => {
+  try {
+    const { sessionId } = req.params;
+    const session = await sessionService.getSessionById(Number(sessionId));
+    
+    if (!session) {
+      return res.status(404).json({ mensaje: 'Sesión no encontrada', success: false });
+    }
+    
+    res.status(200).json({ success: true, session });
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
+  }
+};
+
+// Obtener todas las sesiones
+export const getAllSessions = async (req: Request, res: Response) => {
+  try {
+    const sessions = await sessionService.getAllSessions();
+    res.status(200).json({ success: true, sessions, count: sessions.length });
+  } catch (error) {
+    res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
+  }
+};
+
+// Obtener sesiones por operador
+export const getSessionsByOperator = async (req: Request, res: Response) => {
+  try {
+    const { operator } = req.params;
+    const sessions = await sessionService.getSessionsByOperator(Number(operator));
+    res.status(200).json({ success: true, sessions, count: sessions.length });
   } catch (error) {
     res.status(500).json({ mensaje: 'Error interno del servidor', success: false, error });
   }
