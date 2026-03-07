@@ -2,6 +2,7 @@
 import { userInfo } from 'os';
 import { db } from '../config/dbconfig.config';
 import * as bcrypt from 'bcrypt';
+import sessionService from './session.service';
 export enum  UserRole{
   ADMIN=1,
   MANAGER=2,
@@ -244,7 +245,14 @@ export class UserService {
       return { success: false, message: 'Error al buscar usuarios', error, data: [] };
     }
   }
+  async createSession(operator:number, startDate:string, endDate:string ){
+    try {
+      return await sessionService.createSession(operator, startDate, endDate);
+    } catch (error) {
+      console.error('Error creando sesión:', error);
+      return { success: false, error };
+    }
+  }
+  
 }
-
-
 export default new UserService();

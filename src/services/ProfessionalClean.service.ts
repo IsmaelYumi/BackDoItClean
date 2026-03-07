@@ -2,7 +2,6 @@ import { db } from '../config/dbconfig.config';
 
 export class professionalCleans {
     private collection = db.collection('professionalCleans')
-    
     // Obtener el siguiente ID autoincrementable
     private async getNextId(): Promise<number> {
         try {

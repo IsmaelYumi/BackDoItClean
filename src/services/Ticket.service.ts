@@ -415,6 +415,7 @@ export class Ticket {
             dataToUpdate.status = StatusTicket.CLOSE;
             dataToUpdate.paidAmount = Number(paidAmount) + Number(currentData?.paidAmount);
             dataToUpdate.recoveredAmount=currentData?.valueToPay
+            dataToUpdate.recoveredType=dataToUpdate.paymentType
             dataToUpdate.valueToPay = 0;
             cashToAdd = paidAmount; // El monto que se estaba debiendo es lo que se va a agregar al cash del usuario, convirtiendo a positivo
           }
@@ -575,7 +576,7 @@ export class Ticket {
         snapshot = await this.ticketCollection.get();
       }
       // Filtrar fechas y status en memoria (sin índices)
-      const tickets = snapshot.docs
+      const tickets = snapshot.docs 
         .map((doc) => doc.data())
         .filter((ticket: any) => {
           const ticketDate = ticket.createdAt;
