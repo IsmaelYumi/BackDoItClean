@@ -1,15 +1,15 @@
-import {db}from '../config/dbconfig.config';
-export enum TypeDiscount{
-    PERCENTAGE='Percentage',
-    VALUE='valor'
+import { db } from '../config/dbconfig.config';
+export enum TypeExtra {
+    PERCENTAGE = 'Percentage',
+    VALUE = 'valor'
 }
-export class discounts {
-        private collection = db.collection('discounts')
-        private async getNextCode(): Promise<number> {
+export class Extras {
+    private collection = db.collection('extras')
+    private async getNextCode(): Promise<number> {
         try {
             const snapshot = await this.collection.get();
             if (snapshot.empty) {
-                return 1; // Si no hay professional cleans, comenzar con código 1
+                return 1; // Si no hay extras, comenzar con código 1
             }
             // Obtener el máximo código desde los documentos
             const maxCode = snapshot.docs.reduce((max, doc) => {
@@ -27,7 +27,7 @@ export class discounts {
         try {
             const snapshot = await this.collection.get();
             if (snapshot.empty) {
-                return 1; // Si no hay professional cleans, comenzar con ID 1
+                return 1; // Si no hay extras, comenzar con ID 1
             }
             // Obtener el máximo ID desde los doc.id
             const maxId = snapshot.docs.reduce((max, doc) => {
@@ -40,12 +40,12 @@ export class discounts {
             return 1;
         }
     }
-    async createDiscount(name: string, value: number, type: TypeDiscount, isVisible: boolean, isEnable: boolean) {
+    async createExtra(name: string, value: number, type: TypeExtra, isVisible: boolean, isEnable: boolean) {
         try {
             const id = await this.getNextId();
             const code = await this.getNextCode();
-            
-            const discountData = {
+
+            const extraData = {
                 code,
                 name,
                 value,
@@ -56,112 +56,112 @@ export class discounts {
                 updatedAt: new Date().toISOString()
             };
 
-            await this.collection.doc(id.toString()).set(discountData);
-            
+            await this.collection.doc(id.toString()).set(extraData);
+
             return {
                 success: true,
-                message: 'Descuento creado exitosamente',
-                data: { id, ...discountData }
+                message: 'Extra creado exitosamente',
+                data: { id, ...extraData }
             };
         } catch (error) {
-            console.error('Error creando descuento:', error);
+            console.error('Error creando extra:', error);
             throw error;
         }
     }
 
-    async getAllDiscounts() {
+    async getAllExtras() {
         try {
             const snapshot = await this.collection.get();
-            
+
             if (snapshot.empty) {
                 return {
                     success: true,
-                    message: 'No hay descuentos registrados',
+                    message: 'No hay extras registrados',
                     data: []
                 };
             }
 
-            const discounts = snapshot.docs.map(doc => ({
+            const extras = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
             }));
 
             return {
                 success: true,
-                message: 'Descuentos obtenidos exitosamente',
-                data: discounts
+                message: 'Extras obtenidos exitosamente',
+                data: extras
             };
         } catch (error) {
-            console.error('Error obteniendo descuentos:', error);
+            console.error('Error obteniendo extras:', error);
             throw error;
         }
     }
 
-    async getDiscountById(id: string) {
+    async getExtraById(id: string) {
         try {
             const doc = await this.collection.doc(id).get();
-            
+
             if (!doc.exists) {
                 return {
                     success: false,
-                    message: 'Descuento no encontrado',
+                    message: 'Extra no encontrado',
                     data: null
                 };
             }
 
             return {
                 success: true,
-                message: 'Descuento obtenido exitosamente',
+                message: 'Extra obtenido exitosamente',
                 data: { id: doc.id, ...doc.data() }
             };
         } catch (error) {
-            console.error('Error obteniendo descuento:', error);
+            console.error('Error obteniendo extra:', error);
             throw error;
         }
     }
 
-    async getActiveDiscounts() {
+    async getActiveExtras() {
         try {
             const snapshot = await this.collection.where('isEnable', '==', true).get();
-            
+
             if (snapshot.empty) {
                 return {
                     success: true,
-                    message: 'No hay descuentos activos',
+                    message: 'No hay extras activos',
                     data: []
                 };
             }
 
-            const discounts = snapshot.docs.map(doc => ({
+            const extras = snapshot.docs.map(doc => ({
                 id: doc.id,
                 ...doc.data()
             }));
 
             return {
                 success: true,
-                message: 'Descuentos activos obtenidos exitosamente',
-                data: discounts
+                message: 'Extras activos obtenidos exitosamente',
+                data: extras
             };
         } catch (error) {
-            console.error('Error obteniendo descuentos activos:', error);
+            console.error('Error obteniendo extras activos:', error);
             throw error;
         }
     }
 
-    async updateDiscount(id: string, updateData: {
+    async updateExtra(id: string, updateData: {
         name?: string;
         value?: number;
-        type?: TypeDiscount;
+        type?: TypeExtra;
         isVisible?: boolean;
         isEnable?: boolean;
     }) {
         try {
             const doc = await this.collection.doc(id).get();
-            
+
             if (!doc.exists) {
                 return {
                     success: false,
-                    message: 'Descuento no encontrado',
+                    message: 'Extra no encontrado',
                     data: null
                 };
             }
@@ -177,23 +177,23 @@ export class discounts {
 
             return {
                 success: true,
-                message: 'Descuento actualizado exitosamente',
+                message: 'Extra actualizado exitosamente',
                 data: { id: updatedDoc.id, ...updatedDoc.data() }
             };
         } catch (error) {
-            console.error('Error actualizando descuento:', error);
+            console.error('Error actualizando extra:', error);
             throw error;
         }
     }
 
-    async deleteDiscount(id: string) {
+    async deleteExtra(id: string) {
         try {
             const doc = await this.collection.doc(id).get();
-            
+
             if (!doc.exists) {
                 return {
                     success: false,
-                    message: 'Descuento no encontrado',
+                    message: 'Extra no encontrado',
                     data: null
                 };
             }
@@ -202,29 +202,29 @@ export class discounts {
 
             return {
                 success: true,
-                message: 'Descuento eliminado exitosamente',
+                message: 'Extra eliminado exitosamente',
                 data: { id }
             };
         } catch (error) {
-            console.error('Error eliminando descuento:', error);
+            console.error('Error eliminando extra:', error);
             throw error;
         }
     }
 
-    async toggleDiscountStatus(id: string) {
+    async toggleExtraStatus(id: string) {
         try {
             const doc = await this.collection.doc(id).get();
-            
+
             if (!doc.exists) {
                 return {
                     success: false,
-                    message: 'Descuento no encontrado',
+                    message: 'Extra no encontrado',
                     data: null
                 };
             }
 
             const currentStatus = doc.data()?.isEnable || false;
-            
+
             await this.collection.doc(id).update({
                 isEnable: !currentStatus,
                 updatedAt: new Date().toISOString()
@@ -232,11 +232,11 @@ export class discounts {
 
             return {
                 success: true,
-                message: `Descuento ${!currentStatus ? 'activado' : 'desactivado'} exitosamente`,
+                message: `Extra ${!currentStatus ? 'activado' : 'desactivado'} exitosamente`,
                 data: { id, isEnable: !currentStatus }
             };
         } catch (error) {
-            console.error('Error cambiando estado del descuento:', error);
+            console.error('Error cambiando estado del extra:', error);
             throw error;
         }
     }
