@@ -1,20 +1,36 @@
 import { Request, Response } from 'express';
-import { Extras, TypeExtra } from '../services/Extras.service';
+import { Extras } from '../services/Extras.service';
 
 const extrasService = new Extras();
 
 // Crear extra
 export const createExtra = async (req: Request, res: Response) => {
     try {
-        const { name, value, type, isVisible, isEnable } = req.body;
-
-        const result = await extrasService.createExtra(
+        const {
+            imageUrl,
+            code,
             name,
-            value,
-            type as TypeExtra,
+            price,
+            category,
+            isEnable,
             isVisible,
-            isEnable
-        );
+            isPercentage,
+            createdAt,
+            updatedAt
+        } = req.body;
+
+        const result = await extrasService.createExtra({
+            imageUrl,
+            code,
+            name,
+            price,
+            category,
+            isEnable,
+            isVisible,
+            isPercentage,
+            createdAt,
+            updatedAt
+        });
 
         const status = result.success ? 201 : 400;
         res.status(status).json(result);
@@ -59,14 +75,30 @@ export const getActiveExtras = async (_req: Request, res: Response) => {
 export const updateExtra = async (req: Request, res: Response) => {
     try {
         const { id } = req.params;
-        const { name, value, type, isVisible, isEnable } = req.body;
+        const {
+            imageUrl,
+            code,
+            name,
+            price,
+            category,
+            isEnable,
+            isVisible,
+            isPercentage,
+            createdAt,
+            updatedAt
+        } = req.body;
 
         const result = await extrasService.updateExtra(id, {
+            imageUrl,
+            code,
             name,
-            value,
-            type: type as TypeExtra,
+            price,
+            category,
+            isEnable,
             isVisible,
-            isEnable
+            isPercentage,
+            createdAt,
+            updatedAt
         });
 
         const status = result.success ? 200 : 404;

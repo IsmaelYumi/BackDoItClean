@@ -1,10 +1,43 @@
 import { db } from '../config/dbconfig.config';
-export enum TypeExtra {
-    PERCENTAGE = 'Percentage',
-    VALUE = 'valor'
-}
+
+type ExtraInput = {
+    imageUrl?: string;
+    code?: number;
+    name: string;
+    price: number;
+    category?: string;
+    isEnable: boolean;
+    isVisible: boolean;
+    isPercentage: boolean;
+    createdAt?: string | Date;
+    updatedAt?: string | Date;
+};
+
+type ExtraUpdateInput = {
+    imageUrl?: string;
+    code?: number;
+    name?: string;
+    price?: number;
+    category?: string;
+    isEnable?: boolean;
+    isVisible?: boolean;
+    isPercentage?: boolean;
+    createdAt?: string | Date;
+    updatedAt?: string | Date;
+};
+
 export class Extras {
     private collection = db.collection('extras')
+
+    private formatDate(value?: string | Date): string {
+        if (!value) {
+            return new Date().toISOString();
+        }
+
+        const date = value instanceof Date ? value : new Date(value);
+        return Number.isNaN(date.getTime()) ? new Date().toISOString() : date.toISOString();
+    }
+
     private async getNextCode(): Promise<number> {
         try {
             const snapshot = await this.collection.get();
@@ -40,22 +73,44 @@ export class Extras {
             return 1;
         }
     }
-    async createExtra(name: string, value: number, type: TypeExtra, isVisible: boolean, isEnable: boolean) {
+    async createExtra(extraInput: ExtraInput) {
+        const {
+            imageUrl,
+            code,
+            name,
+            price,
+            category,
+            isEnable,
+            isVisible,
+            isPercentage,
+            createdAt,
+            updatedAt
+        } = extraInput;
+
+        if (!name || price === undefined || price === null) {
+            return {
+                success: false,
+                message: 'Nombre y precio son requeridos',
+                data: null
+            };
+        }
+
         try {
             const id = await this.getNextId();
-            const code = await this.getNextCode();
+            const extraCode = code ?? await this.getNextCode();
 
             const extraData = {
-                code,
+                imageUrl: imageUrl || '',
+                code: extraCode,
                 name,
-                value,
-                type,
-                isVisible,
+                price,
+                category: category || '',
                 isEnable,
-                createdAt: new Date().toISOString(),
-                updatedAt: new Date().toISOString()
+                isVisible,
+                isPercentage,
+                createdAt: this.formatDate(createdAt),
+                updatedAt: this.formatDate(updatedAt)
             };
-
             await this.collection.doc(id.toString()).set(extraData);
 
             return {
@@ -148,13 +203,7 @@ export class Extras {
         }
     }
 
-    async updateExtra(id: string, updateData: {
-        name?: string;
-        value?: number;
-        type?: TypeExtra;
-        isVisible?: boolean;
-        isEnable?: boolean;
-    }) {
+    async updateExtra(id: string, updateData: ExtraUpdateInput) {
         try {
             const doc = await this.collection.doc(id).get();
 
@@ -168,7 +217,7 @@ export class Extras {
 
             const updatedData = {
                 ...updateData,
-                updatedAt: new Date().toISOString()
+                updatedAt: this.formatDate(updateData.updatedAt)
             };
 
             await this.collection.doc(id).update(updatedData);
