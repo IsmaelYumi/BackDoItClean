@@ -113,16 +113,20 @@ export class Extras {
             };
             await this.collection.doc(id.toString()).set(extraData);
 
+
             return {
-                success: true,
-                message: 'Extra creado exitosamente',
-                data: { id, ...extraData }
+                mensaje: "Extra registrado correctamente", success: true, id
             };
         } catch (error) {
-            console.error('Error creando extra:', error);
-            throw error;
+
+            console.error('Error creando professional clean:', error);
+            return { mensaje: "Error al registrar el professional clean", success: false, error }
         }
     }
+
+
+
+
 
     async getAllExtras() {
         try {
