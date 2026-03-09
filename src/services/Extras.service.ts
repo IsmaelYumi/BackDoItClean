@@ -42,7 +42,7 @@ export class Extras {
         try {
             const snapshot = await this.collection.get();
             if (snapshot.empty) {
-                return 1; // Si no hay extras, comenzar con código 1
+                return 701; // Si no hay extras, comenzar con código 1
             }
             // Obtener el máximo código desde los documentos
             const maxCode = snapshot.docs.reduce((max, doc) => {
@@ -53,7 +53,7 @@ export class Extras {
             return maxCode + 1;
         } catch (error) {
             console.error('Error obteniendo siguiente código:', error);
-            return 1;
+            return 701;
         }
     }
     private async getNextId(): Promise<number> {
