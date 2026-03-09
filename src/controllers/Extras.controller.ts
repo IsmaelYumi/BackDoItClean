@@ -77,7 +77,6 @@ export const updateExtra = async (req: Request, res: Response) => {
         const { id } = req.params;
         const {
             imageUrl,
-            code,
             name,
             price,
             category,
@@ -90,7 +89,6 @@ export const updateExtra = async (req: Request, res: Response) => {
 
         const result = await extrasService.updateExtra(id, {
             imageUrl,
-            code,
             name,
             price,
             category,
