@@ -6,6 +6,7 @@ import serviceRoutes from './routes/service.routes';
 import userRoutes from './routes/user.routes';
 import sucursalRoutes from './routes/sucursal.routes';
 import ticketRoutes from './routes/ticket.routes';
+import extrasRoutes from './routes/extras.routes';
 
 
 const app: Application = express();
@@ -27,5 +28,6 @@ app.use('/api', serviceRoutes);
 app.use('/api', userRoutes);
 app.use('/api', sucursalRoutes);
 app.use('/api', ticketRoutes);
+app.use('/api', extrasRoutes);
 
 export default app;
